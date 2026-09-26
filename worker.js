@@ -10,7 +10,9 @@
   Эндпоинты:
     /ping
     /quotes?s=AAPL,0700.HK,SBER.ME   — котировки (.ME = Мосбиржа)
-    /chart?s=AAPL                     — дневные цены за год
+    /chart?s=AAPL&usd=1               — дневные цены за год (usd=1 — пересчёт в доллары по курсу каждого дня)
+    /metals                           — учётные цены ЦБ РФ на драгметаллы за год
+    /cbrdyn?id=R01235                 — курс валюты ЦБ РФ за год
     /search?q=apple                   — поиск акций
 */
 
@@ -37,7 +39,9 @@ export default {
         case '/ping':   data = { ok: true, time: Date.now() }; break;
         case '/debug':  data = await debug(); break;
         case '/quotes': data = await quotes(url.searchParams.get('s') || ''); ttl = 60; break;
-        case '/chart':  data = await chart(url.searchParams.get('s') || ''); ttl = 6 * 3600; break;
+        case '/chart':  data = await chart(url.searchParams.get('s') || '', url.searchParams.get('usd') === '1'); ttl = 6 * 3600; break;
+        case '/metals': data = await metals(); ttl = 3 * 3600; break;
+        case '/cbrdyn': data = await cbrDyn(url.searchParams.get('id') || 'R01235'); ttl = 3 * 3600; break;
         case '/search': data = await search(url.searchParams.get('q') || ''); ttl = 24 * 3600; break;
         default: return json({ error: 'not found' }, 404);
       }
@@ -162,9 +166,26 @@ async function moexQuotes(ids) {
 }
 
 /* ---------------- график за год ---------------- */
-async function chart(s) {
+async function chart(s, usd) {
   if (!s) throw new Error('no symbol');
-  if (s.endsWith('.ME')) return moexHistory(s.slice(0, -3));
+  const c = s.endsWith('.ME') ? await moexHistory(s.slice(0, -3)) : await yahooHistory(s);
+  if (!usd || c.cur === 'USD') return c;
+  // пересчёт в доллары по курсу на каждую дату
+  try {
+    const fx = c.cur === 'RUB' ? (await cbrDyn('R01235')).pts : (await yahooHistory(c.cur + '=X')).pts;
+    if (!fx.length) throw new Error('fx');
+    let j = 0;
+    const pts = c.pts.map(([t, v]) => {
+      while (j + 1 < fx.length && fx[j + 1][0] <= t) j++;
+      return [t, +(v / fx[j][1]).toFixed(4)];
+    });
+    return { cur: 'USD', pts, local: c.cur };
+  } catch {
+    return c; // не вышло — отдаём в местной валюте, приложение это покажет
+  }
+}
+
+async function yahooHistory(s) {
   const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}?range=1y&interval=1d`, { headers: { 'User-Agent': UA } });
   if (!r.ok) throw new Error('yahoo chart HTTP ' + r.status);
   const j = await r.json();
@@ -214,7 +235,38 @@ async function debug() {
     t('yahoo quote AAPL', async () => { const e = []; const r = await yahooQuotes(['AAPL', '7203.T'], e); if (e.length) throw new Error(e.join('; ')); return r.map(x => x.s + '=' + x.price).join(', '); }),
     t('yahoo chart AAPL', async () => { const c = await chart('AAPL'); return c.pts.length + ' точек'; }),
     t('moex SBER', async () => { const r = await moexQuotes(['SBER']); return r.map(x => x.s + '=' + x.price).join(', ') || 'пусто'; }),
-    t('moex chart SBER', async () => { const c = await moexHistory('SBER'); return c.pts.length + ' точек'; })
+    t('moex chart SBER', async () => { const c = await moexHistory('SBER'); return c.pts.length + ' точек'; }),
+    t('chart 7203.T в $', async () => { const c = await chart('7203.T', true); return c.cur + ', ' + c.pts.length + ' точек'; }),
+    t('cbr металлы', async () => { const c = await metals(); return 'золото ' + c.hist[1].length + ' точек'; }),
+    t('cbr USD', async () => { const c = await cbrDyn('R01235'); return c.pts.length + ' точек'; })
   ]);
   return Object.fromEntries(res);
+}
+
+/* ---------------- ЦБ РФ: драгметаллы и курсы валют ---------------- */
+const cbrDate = d => `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+const cbrRange = () => { const to = new Date(), from = new Date(Date.now() - 366 * 864e5); return `date_req1=${cbrDate(from)}&date_req2=${cbrDate(to)}`; };
+const num = x => parseFloat(x.replace(/\s/g, '').replace(',', '.'));
+async function cbrText(u) {
+  const r = await fetch(u, { headers: { 'User-Agent': UA } });
+  if (!r.ok) throw new Error('cbr HTTP ' + r.status);
+  return r.text(); // названия в windows-1251 не нужны, цифры и даты — ASCII
+}
+async function metals() {
+  const x = await cbrText('https://www.cbr.ru/scripts/xml_metall.asp?' + cbrRange());
+  const hist = { 1: [], 2: [], 3: [], 4: [] };
+  const re = /<Record Date="(\d\d)\.(\d\d)\.(\d{4})" Code="(\d)">\s*<Buy>([\d\s,.]+)<\/Buy>/g;
+  let m;
+  while ((m = re.exec(x))) hist[m[4]] && hist[m[4]].push([Date.UTC(+m[3], m[2] - 1, +m[1]), num(m[5])]);
+  Object.values(hist).forEach(a => a.sort((p, q) => p[0] - q[0]));
+  if (!hist[1].length) throw new Error('cbr: пустой ответ');
+  return { cur: 'RUB', hist };
+}
+async function cbrDyn(id) {
+  const x = await cbrText(`https://www.cbr.ru/scripts/XML_dynamic.asp?${cbrRange()}&VAL_NM_RQ=${encodeURIComponent(id)}`);
+  const re = /<Record Date="(\d\d)\.(\d\d)\.(\d{4})"[^>]*>\s*<Nominal>(\d+)<\/Nominal>\s*<Value>([\d\s,.]+)<\/Value>/g;
+  const pts = []; let m;
+  while ((m = re.exec(x))) pts.push([Date.UTC(+m[3], m[2] - 1, +m[1]), +(num(m[5]) / +m[4]).toFixed(6)]);
+  if (!pts.length) throw new Error('cbr: пустой ответ');
+  return { cur: 'RUB', pts };
 }

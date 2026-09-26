@@ -41,7 +41,9 @@ img{max-width:100%}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* ---------- верхняя панель ---------- */
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg)}
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;margin-top:calc(-1 * env(safe-area-inset-top,0px));padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--bg);transition:box-shadow .2s}
+.scrolled .bar{box-shadow:0 1px 0 var(--line),0 6px 16px rgba(0,0,0,.05)}
+.editor .bar{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:max(14px,calc(50vw - 50% + 14px));padding-right:max(14px,calc(50vw - 50% + 14px))}
 .bar h1{flex:1;margin:0;font-size:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ibtn{min-width:40px;height:40px;border-radius:12px;display:inline-grid;place-items:center;padding:0 10px;font-weight:500}
 .ibtn:active{background:var(--soft)}
@@ -290,6 +292,7 @@ img{max-width:100%}
 .mkt{padding-bottom:100px}
 .mchips{padding:0 0 10px;margin:0 -16px;padding-left:16px;padding-right:16px}
 .mstat{font-size:12.5px;color:var(--muted);margin:0 2px 8px}
+.msec{font-size:13px;font-weight:600;color:var(--muted);margin:14px 2px 8px}
 .mstat.err{color:var(--danger)}
 .mstat span{color:var(--muted)}.mstat .warn{color:#c08a1c}
 .chip .fl{width:20px;height:14px;display:inline-grid;place-items:center;overflow:hidden;border-radius:3px;font-size:10px}
@@ -297,6 +300,7 @@ img{max-width:100%}
 .av small,.fl small{font-size:11px;font-weight:600;color:var(--muted)}
 .mlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .mrow > .card{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:16px;padding:10px 12px;cursor:pointer}
+.mrow .rk:empty{display:none}
 .mrow .rk{width:22px;flex:none;text-align:right;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .av{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:22px;background:var(--soft);overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
@@ -335,6 +339,26 @@ img{max-width:100%}
 .howto p{color:var(--muted);margin:6px 0 0}
 #mRef.spin svg{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.grid.many{gap:12px}
+.grid.many .tile{aspect-ratio:1/.74;padding:12px 14px}
+.grid.many .tile .pic,.grid.many .tile .glyph{width:auto;height:58%;aspect-ratio:1}
+.know .kintro{font-size:14px;color:var(--muted);margin:0 2px 12px}
+.know .kintro b{color:var(--fg)}
+.klist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.kcard > .card{background:var(--surface);border-radius:18px;padding:14px 16px 14px 18px;cursor:pointer;position:relative;overflow:hidden}
+.kcard > .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--kc)}
+.kmeta{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.kcat{color:var(--kc);font-weight:600;filter:saturate(1.2) brightness(.85)}
+.knew{background:var(--kc);color:#fff;border-radius:6px;padding:1px 6px;font-weight:600;font-size:11.5px}
+.kdate{margin-left:auto}
+.ktitle{font-weight:700;font-size:17px;margin:4px 0 3px;letter-spacing:-.01em}
+.kq{font:15px/1.5 var(--text);color:var(--muted);margin:0}
+.kq.big{color:var(--fg);font-size:16.5px}
+.kwiki{margin-top:14px;background:var(--soft);border-radius:14px;padding:12px 14px}
+.kwiki:has(#kwLoad){background:none;padding:0}
+.kwiki .kw-t{font-weight:600;font-size:14px;margin-bottom:4px}
+.kwiki p{margin:0 0 8px;font:15px/1.55 var(--text)}
+.kwiki a{color:var(--accent);font-size:14px;font-weight:500}
 .textbtn{color:var(--muted);font-weight:500;height:36px;padding:0 12px}
 .note .paper{background:var(--st);border-radius:22px;padding:14px 18px 16px;transition:clip-path .25s}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .note .paper{background:color-mix(in srgb,var(--st) 17%,var(--surface))}}
@@ -438,7 +462,8 @@ let tiles = store.get('pl.tiles', [
   { id: uid(), title: 'Цели',       color: '#7cc6a4', img: null, type: 'goals' },
   { id: uid(), title: 'Заметки',    color: '#e8e4da', img: null, type: 'notes' },
   { id: uid(), title: 'Дневник',    color: '#a78bfa', img: null, type: 'diary' },
-  { id: uid(), title: 'Рынки',      color: '#5fb3d9', img: null, type: 'market' }
+  { id: uid(), title: 'Рынки',      color: '#5fb3d9', img: null, type: 'market' },
+  { id: uid(), title: 'Знания',     color: '#f4d35e', img: null, type: 'know' }
 ]);
 let nb = store.get('pl.notes', { folders: [], notes: [], tags: ['идея', 'работа', 'личное'] });
 const saveTiles = () => store.set('pl.tiles', tiles);
@@ -464,6 +489,7 @@ if (tiles[1] && tiles[1].type === 'blank') {           // миграция: вт
   if (tiles.length !== before) saveTiles();
 }
 if (!tiles.some(t => t.type === 'diary')) { tiles.push({ id: uid(), title: 'Дневник', color: '#a78bfa', img: null, type: 'diary' }); saveTiles(); }
+if (!tiles.some(t => t.type === 'know')) { tiles.push({ id: uid(), title: 'Знания', color: '#f4d35e', img: null, type: 'know' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'market')) { tiles.push({ id: uid(), title: 'Рынки', color: '#5fb3d9', img: null, type: 'market' }); saveTiles(); }
 const saveNb = () => store.set('pl.notes', nb);
 
@@ -583,9 +609,12 @@ function route(){
   if (tile.type === 'goals') return renderGoals(tile);
   if (tile.type === 'diary') return renderDiary(tile);
   if (tile.type === 'market') return renderMarket(tile);
+  if (tile.type === 'know') return renderKnow(tile);
   renderBlank(tile);
 }
 window.addEventListener('hashchange', route);
+
+window.addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 4), { passive: true });
 
 /* =========================================================
    Тема: светлая / ночная
@@ -614,7 +643,7 @@ function renderHome(){
     <button class="gear theme" id="themeBtn" aria-label="${isDark() ? 'Дневной режим' : 'Ночной режим'}">${isDark() ? ICON.sun : ICON.moon}</button>
     <button class="gear${editMode ? ' on' : ''}" id="editBtn" aria-label="${editMode ? 'Закончить настройку' : 'Настроить плитки'}" aria-pressed="${editMode}">${ICON.gear}</button>
     <div class="grid-wrap">
-      <div class="grid${editMode ? ' editing' : ''}" id="grid">
+      <div class="grid${editMode ? ' editing' : ''}${tiles.length > 6 ? ' many' : ''}" id="grid">
         ${tiles.map(t => `
           <button class="tile" data-id="${t.id}" style="background:${t.color};color:${inkFor(t.color)}">
             ${t.img ? `<img class="pic" src="${t.img}" alt="">` : `<span class="glyph"></span>`}
@@ -2153,6 +2182,7 @@ function fmtCap(usd){
   return usd >= 1e12 ? f(usd / 1e12, 'трлн') : usd >= 1e9 ? f(usd / 1e9, 'млрд') : f(usd / 1e6, 'млн');
 }
 const fmtPct = p => (p > 0 ? '+' : p < 0 ? '−' : '') + Math.abs(p || 0).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+const usdPrice = (v, cur) => { if (v == null) return null; if (cur === 'USD') return v; const r = mc.fx && mc.fx.rates && mc.fx.rates[cur]; return r ? v / r : null; };
 const toUsd = (v, cur) => { if (!v) return 0; const r = mc.fx && mc.fx.rates && mc.fx.rates[cur]; return cur === 'USD' ? v : r ? v / r : 0; };
 const ago = ts => ts ? new Date(ts).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
 
@@ -2185,6 +2215,18 @@ async function loadStocks(force){
   mc.stocks = { ts: Date.now(), data: { ...prev, ...Object.fromEntries(rows.map(q => [q.s, q])) }, warn: [...errs].filter(e => !/запасной путь/.test(e)).join('; ') };
   saveMc();
 }
+async function loadRub(force){
+  if (!force && mc.rub && Date.now() - mc.rub.ts < 30 * 60e3) return;
+  const r = await fetch('https://www.cbr-xml-daily.ru/daily_json.js');
+  if (!r.ok) throw new Error('ЦБ HTTP ' + r.status);
+  mc.rub = { ts: Date.now(), data: await r.json() }; saveMc();
+}
+async function loadMetals(force){
+  if (!force && mc.metals && Date.now() - mc.metals.ts < 3 * 36e5) return;
+  if (!mk.worker) return;
+  const j = await wget('/metals');
+  mc.metals = { ts: Date.now(), hist: j.hist }; saveMc();
+}
 async function loadCrypto(force){
   if (!force && mc.crypto && Date.now() - mc.crypto.ts < 60e3) return;
   const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&price_change_percentage=24h');
@@ -2198,7 +2240,9 @@ async function loadChart(kind, id){
   const key = kind + ':' + id, c = mc.charts[key];
   if (c && Date.now() - c.ts < 6 * 36e5) return c;
   let res;
-  if (kind === 'stock') res = await wget('/chart?s=' + encodeURIComponent(id));
+  if (kind === 'stockusd') res = await wget('/chart?usd=1&s=' + encodeURIComponent(id));
+  else if (kind === 'cur') res = await wget('/cbrdyn?id=' + encodeURIComponent(id));
+  else if (kind === 'metal') { await loadMetals(); return { ts: Date.now(), cur: 'RUB', pts: mc.metals.hist[id] }; }
   else {
     const r = await fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=365&interval=daily`);
     if (r.status === 429) throw new Error('limit');
@@ -2217,7 +2261,7 @@ function renderMarket(tile){
     <button class="ibtn" id="mRef" aria-label="Обновить"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></button>
     <button class="ibtn" id="mSet" aria-label="Настройки">${ICON.gear}</button>`) + `
   <main class="hab-page mkt">
-    <div class="seg" id="mseg"><button data-tab="stocks">Акции</button><button data-tab="crypto">Криптовалюта</button></div>
+    <div class="seg" id="mseg"><button data-tab="stocks">Акции</button><button data-tab="crypto">Крипта</button><button data-tab="rub">Курсы ₽</button></div>
     <div id="mv"></div>
   </main>
   <button class="fab hidden" id="mAdd">${ICON.plus}Акция</button>`;
@@ -2225,12 +2269,17 @@ function renderMarket(tile){
   const draw = () => {
     document.querySelectorAll('#mseg button').forEach(b => b.classList.toggle('on', b.dataset.tab === mui.tab));
     $('#mAdd').classList.toggle('hidden', mui.tab !== 'stocks' || !mk.worker);
-    mui.tab === 'stocks' ? drawStocks() : drawCrypto();
+    mui.tab === 'stocks' ? drawStocks() : mui.tab === 'crypto' ? drawCrypto() : drawRub();
   };
   const refresh = async force => {
     if (busy) return; busy = true;
     $('#mRef').classList.add('spin');
-    try { mui.tab === 'stocks' ? await loadStocks(force) : await loadCrypto(force); mui.err = ''; }
+    try {
+      if (mui.tab === 'stocks') await loadStocks(force);
+      else if (mui.tab === 'crypto') await loadCrypto(force);
+      else { mui.merr = ''; await Promise.all([loadRub(force), loadMetals(force).catch(e => { mui.merr = e.message; })]); }
+      mui.err = '';
+    }
     catch (e) { mui.err = errText(e); }
     busy = false; $('#mRef')?.classList.remove('spin');
     if (location.hash.startsWith('#t/' + tile.id)) draw();
@@ -2289,13 +2338,16 @@ function renderMarket(tile){
         key: i.s, rank: n + 1, flag: flagImg(i.c), swipe: true,
         name: i.d ? i.d.name : i.s,
         sub: (COUNTRY[i.c] || COUNTRY.XX)[1] + (i.usd ? ', ' + fmtCap(i.usd) : ', ' + i.s),
-        price: i.d ? fmtMoney(i.d.price, i.d.cur) : '—', chg: i.d ? i.d.chg : null
+        price: i.d ? (usdPrice(i.d.price, i.d.cur) != null ? fmtMoney(usdPrice(i.d.price, i.d.cur), 'USD') : fmtMoney(i.d.price, i.d.cur)) : '—', chg: i.d ? i.d.chg : null
       })).join('')}</ul>`;
     $('#mc').onclick = e => { const b = e.target.closest('[data-c]'); if (b) { mui.country = b.dataset.c; drawStocks(); } };
     $('#ml').onclick = e => {
       const li = e.target.closest('.mrow'); if (!li || Date.now() - lastSwipe < 400) return;
       const x = mk.stocks.find(y => y.s === li.dataset.k), d = q[x.s];
-      chartSheet({ kind: 'stock', id: x.s, name: d ? d.name : x.s, sub: `${x.s}, ${(COUNTRY[x.c] || COUNTRY.XX)[1]}`, price: d && d.price, cur: d ? d.cur : null, chg: d && d.chg, cap: d ? toUsd(d.cap, d.cur) : 0 });
+      const up = d ? usdPrice(d.price, d.cur) : null;
+      chartSheet({ kind: 'stockusd', id: x.s, name: d ? d.name : x.s, sub: `${x.s}, ${(COUNTRY[x.c] || COUNTRY.XX)[1]}`,
+        price: up ?? (d && d.price), cur: up != null ? 'USD' : d && d.cur, chg: d && d.chg, cap: d ? toUsd(d.cap, d.cur) : 0,
+        local: d && d.cur !== 'USD' ? { price: d.price, cur: d.cur } : null });
     };
     document.querySelectorAll('#ml .mrow').forEach(li => attachSwipe(li, {
       left: { label: 'Убрать', run: reset => {
@@ -2305,6 +2357,45 @@ function renderMarket(tile){
         }, reset, 'Убрать');
       } }
     }));
+  }
+
+  /* ---------- курсы к рублю и драгметаллы ---------- */
+  function drawRub(){
+    const r = mc.rub, m = mc.metals;
+    const TOP = ['USD', 'EUR', 'CNY', 'GBP', 'JPY', 'CHF', 'TRY', 'KZT', 'BYN', 'AED', 'INR', 'HKD'];
+    const vals = r ? Object.values(r.data.Valute).sort((a, b) => {
+      const ia = TOP.indexOf(a.CharCode), ib = TOP.indexOf(b.CharCode);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.Name.localeCompare(b.Name, 'ru');
+    }) : [];
+    const METALS = [[1, 'Золото', '🥇'], [2, 'Серебро', '🥈'], [3, 'Платина', '⚪'], [4, 'Палладий', '⚫']];
+    const metalRow = ([code, name, ic]) => {
+      const h = m && m.hist[code]; if (!h || !h.length) return '';
+      const last = h[h.length - 1][1], prev = h.length > 1 ? h[h.length - 2][1] : last;
+      return rowHTML({ key: 'm' + code, rank: '', flag: ic, name, sub: `₽ за грамм, ${new Date(h[h.length - 1][0]).toLocaleDateString('ru-RU')}`, price: fmtMoney(last, 'RUB'), chg: (last / prev - 1) * 100 });
+    };
+    $('#mv').innerHTML = statusLine(r && r.ts) + `
+      <div class="msec">Драгоценные металлы, учётные цены ЦБ РФ</div>
+      ${m ? `<ul class="mlist" id="mlm">${METALS.map(metalRow).join('')}</ul>`
+          : `<div class="legend" style="text-align:left;margin-bottom:8px">${!mk.worker ? 'Цены на металлы идут через посредника: укажите его в настройках' : mui.merr ? 'Не удалось загрузить: ' + esc(mui.merr) : 'Загрузка…'}</div>`}
+      <div class="msec">Валюты, официальный курс ЦБ РФ${r ? ' на ' + new Date(r.data.Date).toLocaleDateString('ru-RU') : ''}</div>
+      <ul class="mlist" id="mlv">${vals.map(v => rowHTML({
+        key: v.CharCode, rank: '', flag: v.CharCode === 'XDR' ? '🌐' : flagImg(v.CharCode.slice(0, 2)),
+        name: v.Name, sub: `${v.CharCode}${v.Nominal > 1 ? ', за ' + v.Nominal : ''}`,
+        price: fmtMoney(v.Value, 'RUB'), chg: (v.Value / v.Previous - 1) * 100
+      })).join('')}</ul>`;
+    const mm = $('#mlm');
+    mm && (mm.onclick = e => {
+      const li = e.target.closest('.mrow'); if (!li) return;
+      const code = +li.dataset.k.slice(1), h = m.hist[code], name = METALS.find(x => x[0] === code)[1];
+      const last = h[h.length - 1][1], prev = h.length > 1 ? h[h.length - 2][1] : last;
+      chartSheet({ kind: 'metal', id: code, name, sub: 'Учётная цена ЦБ РФ, ₽ за грамм', price: last, cur: 'RUB', chg: (last / prev - 1) * 100, chgLabel: 'к прошлой цене' });
+    });
+    $('#mlv').onclick = e => {
+      const li = e.target.closest('.mrow'); if (!li) return;
+      const v = r.data.Valute[li.dataset.k];
+      if (!mk.worker) return toast('График курса идёт через посредника: укажите его в настройках');
+      chartSheet({ kind: 'cur', id: v.ID, name: v.Name, sub: `${v.CharCode}, курс ЦБ РФ за 1 ${v.CharCode}`, price: v.Value / v.Nominal, cur: 'RUB', chg: (v.Value / v.Previous - 1) * 100, chgLabel: 'к прошлому курсу' });
+    };
   }
 
   /* ---------- крипта ---------- */
@@ -2329,7 +2420,7 @@ function chartSheet(o){
   sheet(`
     <div class="ch-head">
       <div><h2 style="margin:0">${esc(o.name)}</h2><div class="ms">${esc(o.sub)}${o.cap ? ', ' + fmtCap(o.cap) : ''}</div></div>
-      <div class="mp"><div class="pr big">${fmtMoney(o.price, o.cur)}</div>${o.chg != null ? `<div class="ch ${o.chg > 0 ? 'up' : o.chg < 0 ? 'dn' : ''}">${fmtPct(o.chg)} за день</div>` : ''}</div>
+      <div class="mp"><div class="pr big">${fmtMoney(o.price, o.cur)}</div>${o.local ? `<div class="ms">${fmtMoney(o.local.price, o.local.cur)} на бирже</div>` : ''}${o.chg != null ? `<div class="ch ${o.chg > 0 ? 'up' : o.chg < 0 ? 'dn' : ''}">${fmtPct(o.chg)} ${o.chgLabel || 'за день'}</div>` : ''}</div>
     </div>
     <div class="chart" id="chart"><div class="hint">Загрузка графика…</div></div>
     <div class="ch-stats" id="chStats"></div>
@@ -2340,7 +2431,10 @@ function chartSheet(o){
     catch (e) { const cached = mc.charts[o.kind + ':' + o.id]; if (cached) c = cached; else { $('#chart', el).innerHTML = `<div class="hint">Не удалось загрузить график: ${esc(e.message === 'noworker' ? 'посредник не настроен' : e.message === 'limit' ? 'лимит запросов, попробуйте через минуту' : e.message)}</div>`; return; } }
     const pts = (c.pts || []).filter(p => p[1] != null);
     if (pts.length < 2) { $('#chart', el).innerHTML = '<div class="hint">Нет данных за год</div>'; return; }
-    const cur = c.cur || o.cur, first = pts[0][1], last = o.price ?? pts[pts.length - 1][1], g = (last / first - 1) * 100;
+    const cur = c.cur || o.cur, first = pts[0][1];
+    const last = cur === o.cur && o.price != null ? o.price : o.local && cur === o.local.cur ? o.local.price : pts[pts.length - 1][1];
+    const g = (last / first - 1) * 100;
+    if (o.local && cur !== 'USD') $('#chStats', el).insertAdjacentHTML('beforebegin', '<div class="legend" style="text-align:left">График в местной валюте: курс для пересчёта не загрузился</div>');
     drawChart($('#chart', el), pts, cur, g >= 0);
     const d0 = new Date(pts[0][0]);
     $('#chStats', el).innerHTML = `
@@ -2449,17 +2543,407 @@ function marketSettings(done){
 }
 
 /* =========================================================
+   Знания: каждый день 1–3 новые темы из разных сфер
+   ========================================================= */
+const KCAT = {
+  phys: ['Физика', '#6b8afd'], space: ['Космос', '#7b6cf6'], bio: ['Биология', '#4caf6d'], body: ['Тело и мозг', '#ef6f6c'],
+  psy: ['Психология', '#f2a65a'], hist: ['История', '#b08a5a'], econ: ['Экономика', '#d9a53a'], tech: ['Как устроено', '#5fb3d9'],
+  math: ['Математика и логика', '#8c7ae6'], philo: ['Философия', '#a78bfa'], lang: ['Язык', '#3fa89a'], slang: ['Современный сленг', '#e57fa8'],
+  art: ['Искусство', '#c77dd0'], people: ['Личности', '#b8955a'], earth: ['Земля', '#4b9fa0'], chem: ['Химия', '#8fb34a'], soc: ['Общество', '#e07b54'],
+  wiki: ['Из Википедии', '#7a818c'], own: ['Своя тема', '#7a818c']
+};
+// категория | тема | вопрос-крючок | запрос для Википедии
+const KBANK_RAW = `
+phys|Энтропия|Почему время течёт только вперёд и при чём тут беспорядок?|Энтропия
+phys|Квантовая запутанность|Как две частицы «чувствуют» друг друга на любом расстоянии и почему это всё равно не передача сигнала?|Квантовая запутанность
+phys|Эффект Доплера|Почему сирена меняет тон, проезжая мимо, и как тот же эффект доказал расширение Вселенной?|Эффект Доплера
+phys|Сверхпроводимость|Почему некоторые материалы при охлаждении полностью теряют сопротивление и где это уже используют?|Сверхпроводимость
+phys|Замедление времени|Почему часы на спутниках GPS идут не так, как на Земле, и что было бы, если это не учитывать?|Замедление времени
+phys|Принцип неопределённости|Почему нельзя одновременно точно знать, где частица и куда она летит?|Принцип неопределённости
+phys|Резонанс|Почему мост может разрушиться от шагов марширующих солдат?|Резонанс
+phys|Эффект Казимира|Как пустота может сама прижимать две пластины друг к другу?|Эффект Казимира
+phys|Лазер|Чем свет лазера принципиально отличается от света лампочки?|Лазер
+phys|Сверхтекучесть|Как жидкость может сама выползти из стакана по стенкам?|Сверхтекучесть
+phys|Второй закон Ньютона и инерция|Почему в резко тормозящем автобусе тебя бросает вперёд?|Инерция
+phys|Ядерный синтез|Почему синтез даёт энергию Солнцу, но до сих пор не питает наши города?|Управляемый термоядерный синтез
+space|Чёрная дыра|Что происходит на горизонте событий и почему оттуда не выходит даже свет?|Чёрная дыра
+space|Тёмная материя|Как учёные поняли, что большая часть вещества во Вселенной невидима?|Тёмная материя
+space|Реликтовое излучение|Как мы до сих пор «видим» свет, оставшийся от ранней Вселенной?|Реликтовое излучение
+space|Парадокс Ферми|Если Вселенная так огромна, почему мы до сих пор никого не встретили?|Парадокс Ферми
+space|Нейтронная звезда|Как чайная ложка вещества может весить миллиард тонн?|Нейтронная звезда
+space|Точки Лагранжа|Где в космосе можно «припарковать» телескоп, чтобы он никуда не улетал?|Точки Лагранжа
+space|Гравитационные волны|Как люди смогли заметить колебания самого пространства?|Гравитационные волны
+space|Шкала Кардашёва|Как оценить уровень цивилизации по количеству энергии, которую она использует?|Шкала Кардашёва
+space|Космический мусор и синдром Кесслера|Может ли орбита Земли стать непроходимой из-за обломков?|Синдром Кесслера
+space|Экзопланеты|Как находят планеты у других звёзд, если их почти невозможно увидеть?|Экзопланета
+bio|Митохондрии|Почему у митохондрий своя ДНК и откуда они вообще взялись в наших клетках?|Митохондрия
+bio|CRISPR|Как защитная система бактерий против вирусов стала инструментом редактирования генов?|CRISPR
+bio|Эпигенетика|Может ли образ жизни человека включать и выключать его гены?|Эпигенетика
+bio|Тихоходки|Почему это крошечное существо выживает в открытом космосе?|Тихоходки
+bio|Микробиом человека|Как бактерии в кишечнике влияют на иммунитет и даже на настроение?|Микробиом человека
+bio|Теломеры|Правда ли, что концы хромосом отсчитывают наш возраст?|Теломера
+bio|Прионы|Как белок без ДНК может быть заразным?|Прионы
+bio|Конвергентная эволюция|Почему у акулы и дельфина похожие тела, хотя они совсем не родственники?|Конвергентная эволюция
+bio|Апоптоз|Зачем клеткам встроенная программа самоуничтожения?|Апоптоз
+bio|Горизонтальный перенос генов|Как бактерии обмениваются генами, не будучи родственниками?|Горизонтальный перенос генов
+bio|Эволюция глаза|Как мог появиться такой сложный орган, как глаз, и почему у осьминога он устроен «правильнее»?|Эволюция глаза
+body|Нейропластичность|Как мозг физически меняется, когда мы учимся чему-то новому?|Нейропластичность
+body|Циркадные ритмы|Почему яркий экран вечером мешает уснуть?|Циркадный ритм
+body|Эффект плацебо|Как пустышка может реально облегчать боль?|Эффект плацебо
+body|Дофамин|Почему дофамин — это больше про ожидание награды, чем про удовольствие?|Дофамин
+body|Иммунологическая память|Как организм «помнит» болезнь десятилетиями и на чём основаны прививки?|Иммунологическая память
+body|Устойчивость к антибиотикам|Почему бактерии перестают бояться лекарств и чем это грозит?|Устойчивость к антибиотикам
+body|Фаза быстрого сна|Зачем мозгу сновидения и что происходит, если лишить человека этой фазы?|Фаза быстрого сна
+body|Кортизол|Как хронический стресс меняет тело, а не только настроение?|Кортизол
+body|Проприоцепция|Как ты знаешь, где твоя рука, даже с закрытыми глазами?|Проприоцепция
+body|Блуждающий нерв|Почему медленный выдох успокаивает и при чём тут этот нерв?|Блуждающий нерв
+psy|Когнитивный диссонанс|Почему мы оправдываем свои решения, даже когда они явно были плохими?|Когнитивный диссонанс
+psy|Эффект Даннинга — Крюгера|Почему новички часто уверены в себе сильнее экспертов?|Эффект Даннинга — Крюгера
+psy|Выученная беспомощность|Почему люди перестают пытаться, даже когда выход уже есть?|Выученная беспомощность
+psy|Эффект свидетеля|Почему в толпе человеку помогают реже, чем когда рядом один прохожий?|Эффект свидетеля
+psy|Фундаментальная ошибка атрибуции|Почему чужие ошибки мы объясняем характером, а свои — обстоятельствами?|Фундаментальная ошибка атрибуции
+psy|Теория привязанности|Как отношения с близкими в детстве влияют на отношения во взрослом возрасте?|Теория привязанности
+psy|Состояние потока|Что происходит, когда полностью погружаешься в дело и теряешь счёт времени?|Поток (психология)
+psy|Эффект Зейгарник|Почему незаконченные дела не выходят из головы?|Эффект Зейгарник
+psy|Ошибка невозвратных затрат|Почему мы досматриваем плохой фильм только потому, что уже заплатили за билет?|Невозвратные затраты
+psy|Эксперимент Милгрэма|Почему обычные люди готовы причинить боль по приказу?|Эксперимент Милгрэма
+psy|Прокрастинация|Почему откладывание — это проблема управления эмоциями, а не временем?|Прокрастинация
+psy|Гедонистическая адаптация|Почему радость от новой вещи так быстро проходит?|Гедонистическая адаптация
+psy|Синдром самозванца|Почему успешные люди иногда уверены, что не заслуживают успеха?|Синдром самозванца
+psy|Эффект привязки|Как первая названная цифра незаметно влияет на весь торг?|Эффект привязки
+psy|Иллюзия частоты|Почему новое слово или модель машины вдруг начинают попадаться везде?|Феномен Баадера — Майнхоф
+psy|Когнитивно-поведенческий подход|Как мысли, эмоции и поступки связаны между собой в одну цепочку?|Когнитивно-поведенческая психотерапия
+psy|Алекситимия|Почему некоторым людям трудно назвать, что именно они чувствуют?|Алекситимия
+hist|Катастрофа бронзового века|Почему около 1200 года до н. э. почти одновременно рухнули цивилизации Средиземноморья?|Катастрофа бронзового века
+hist|Великий шёлковый путь|Что, кроме шёлка, передавалось по этому пути между Востоком и Западом?|Великий шёлковый путь
+hist|Чёрная смерть|Как эпидемия чумы в XIV веке изменила экономику и общество Европы?|Чёрная смерть
+hist|Печатный станок Гутенберга|Как одно изобретение запустило Реформацию и научную революцию?|Иоганн Гутенберг
+hist|Тюльпаномания|Как в Голландии XVII века луковица цветка могла стоить как дом?|Тюльпанная лихорадка
+hist|Карибский кризис|Как мир в 1962 году оказался в шаге от ядерной войны и что его остановило?|Карибский кризис
+hist|Падение Константинополя|Почему 1453 год часто считают концом Средневековья?|Падение Константинополя
+hist|Реформы Петра I|Что реально изменилось в России за время его правления и какой ценой?|Реформы Петра I
+hist|Промышленная революция|Почему она началась именно в Англии?|Промышленная революция
+hist|Манхэттенский проект|Как создавали первую атомную бомбу и почему в этом участвовали лучшие физики мира?|Манхэттенский проект
+hist|Антикитерский механизм|Как у древних греков оказался механический «компьютер» для расчёта движения небесных тел?|Антикитерский механизм
+hist|Монгольская империя|Как кочевники создали крупнейшую сухопутную империю в истории?|Монгольская империя
+hist|Александрийская библиотека|Правда ли, что её уничтожил один пожар?|Александрийская библиотека
+hist|Холодная война и космическая гонка|Как соперничество СССР и США запустило человека в космос?|Космическая гонка
+econ|Инфляция|Почему деньги со временем дешевеют и кто от этого выигрывает?|Инфляция
+econ|Сложный процент|Почему небольшие регулярные вложения со временем превращаются в большие суммы?|Сложные проценты
+econ|Трагедия общин|Почему общий ресурс часто истощается, даже если всем от этого хуже?|Трагедия общин
+econ|Дилемма заключённого|Почему разумные люди не сотрудничают, даже когда это выгодно обоим?|Дилемма заключённого
+econ|Мировой финансовый кризис 2008 года|Как плохие ипотечные кредиты в США обрушили мировую экономику?|Мировой финансовый кризис (2007—2008)
+econ|Золотой стандарт|Почему деньги перестали быть обеспечены золотом и что их обеспечивает теперь?|Золотой стандарт
+econ|Эффект Веблена|Почему некоторые товары покупают охотнее, когда они дорожают?|Эффект Веблена
+econ|Гиперинфляция в Веймарской республике|Как деньги в Германии 1923 года обесценились настолько, что ими топили печи?|Гиперинфляция в Веймарской республике
+econ|Закон Гудхарта|Почему показатель, который сделали целью, перестаёт быть хорошим показателем?|Закон Гудхарта
+econ|Блокчейн|Как вести общий реестр, которому доверяют, если нет главного, кто его проверяет?|Блокчейн
+econ|Ключевая ставка|Как решение центрального банка о ставке доходит до цены кредита и цен в магазине?|Ключевая ставка
+tech|GPS|Как телефон определяет своё место по сигналам спутников?|Система глобального позиционирования
+tech|Транзистор|Почему это крошечное устройство изменило весь мир?|Транзистор
+tech|Литий-ионный аккумулятор|Почему батарея телефона со временем держит всё меньше?|Литий-ионный аккумулятор
+tech|Холодильник|Как можно охлаждать, затрачивая энергию и выделяя тепло?|Холодильник
+tech|Турбореактивный двигатель|Как самолёт в сотни тонн удерживается и разгоняется в воздухе?|Турбореактивный двигатель
+tech|Оптоволокно|Как свет передаёт интернет через океан?|Оптическое волокно
+tech|Сенсорный экран|Как экран понимает, где именно ты его коснулся?|Сенсорный экран
+tech|Атомные часы|Как атомы помогают измерять время с точностью до миллиардных долей секунды?|Атомные часы
+tech|Шифрование с открытым ключом|Как можно безопасно договориться о секрете, если тебя подслушивают?|Криптосистема с открытым ключом
+tech|Нейронные сети|Как нейросеть учится, если её никто явно не программирует?|Искусственная нейронная сеть
+tech|TCP/IP|Как сообщение находит путь через тысячи разных сетей?|TCP/IP
+tech|Ядерный реактор|Как управляют цепной реакцией, чтобы она давала энергию, а не взрыв?|Ядерный реактор
+tech|Микроволновая печь|Как микроволновка на самом деле нагревает еду?|Микроволновая печь
+tech|Коробка передач|Зачем машине передачи и что делает сцепление?|Коробка переключения передач
+tech|Антиблокировочная система|Как ABS помогает затормозить и при этом не потерять управление?|Антиблокировочная система
+tech|QR-код|Как квадратики хранят информацию и почему код читается даже частично повреждённым?|QR-код
+tech|Реляционные базы данных|Почему данные хранят в таблицах и как индекс ускоряет поиск в миллионах строк?|Реляционная база данных
+math|Теоремы Гёделя о неполноте|Почему в математике есть истинные утверждения, которые невозможно доказать?|Теоремы Гёделя о неполноте
+math|Парадокс Монти Холла|Почему выбор другой двери выгоднее, хотя кажется, что шансы 50 на 50?|Парадокс Монти Холла
+math|Закон Бенфорда|Почему в реальных данных числа чаще всего начинаются с единицы?|Закон Бенфорда
+math|Мощность множества|Как одна бесконечность может быть больше другой?|Диагональный аргумент Кантора
+math|Теорема Байеса|Как правильно менять свои убеждения, когда появляются новые факты?|Теорема Байеса
+math|Фракталы|Почему длина береговой линии зависит от того, какой линейкой её мерить?|Фрактал
+math|Равенство классов P и NP|Почему главный вопрос информатики оценён в миллион долларов?|Равенство классов P и NP
+math|Парадокс дней рождения|Почему в группе из 23 человек шанс совпадения дней рождения больше 50%?|Парадокс дней рождения
+math|Систематическая ошибка выжившего|Почему изучать только успешных — плохой способ понять успех?|Систематическая ошибка выжившего
+math|Корреляция и причинность|Почему то, что два события происходят вместе, ещё не значит, что одно вызывает другое?|Корреляция
+math|Экспоненциальный рост|Почему человеку так трудно интуитивно понять, как быстро растёт экспонента?|Экспоненциальный рост
+philo|Корабль Тесея|Остаётся ли вещь той же самой, если заменить все её части?|Корабль Тесея
+philo|Проблема вагонетки|Есть ли моральная разница между «сделать» и «допустить»?|Проблема вагонетки
+philo|Бритва Оккама|Почему из двух объяснений обычно стоит выбирать более простое?|Бритва Оккама
+philo|Стоицизм|Чему учили стоики о том, что в нашей власти, а что нет?|Стоицизм
+philo|Экзистенциализм|Что значит, что существование предшествует сущности?|Экзистенциализм
+philo|Миф о пещере|Что Платон хотел сказать образом людей, которые видят только тени?|Миф о пещере
+philo|Мозг в колбе|Можно ли доказать, что мир вокруг не иллюзия?|Мозг в колбе
+philo|Трудная проблема сознания|Почему процессы в мозге сопровождаются переживаниями, а не идут «в темноте»?|Трудная проблема сознания
+philo|Утилитаризм|Можно ли измерять правильность поступка суммой счастья?|Утилитаризм
+philo|Миф о Сизифе|Как Камю предлагает жить, если у жизни нет заранее данного смысла?|Миф о Сизифе
+philo|Парадокс кучи|Сколько песчинок нужно убрать, чтобы куча перестала быть кучей?|Парадокс кучи
+lang|Гипотеза лингвистической относительности|Влияет ли язык, на котором мы говорим, на то, как мы думаем?|Гипотеза лингвистической относительности
+lang|Праиндоевропейский язык|Как лингвисты восстанавливают язык, на котором никто никогда не писал?|Праиндоевропейский язык
+lang|Происхождение слова «вокзал»|Как лондонский увеселительный сад дал имя русскому вокзалу?|Вокзал
+lang|Эвфемизм|Зачем языку «мягкие» слова и как они со временем становятся грубыми?|Эвфемизм
+lang|Эсперанто|Почему искусственный язык так и не стал всемирным?|Эсперанто
+lang|Кириллица|Кто на самом деле создал кириллицу и чем она отличается от глаголицы?|Кириллица
+lang|Мем (Докинз)|Что общего у интернет-мемов и генов по идее Ричарда Докинза?|Мем
+slang|Кринж|Откуда пришло слово и какое чувство оно описывает точнее, чем «стыдно»?|Кринж
+slang|Газлайтинг|Как название старого фильма стало термином для манипуляции?|Газлайтинг
+slang|FOMO|Что такое страх упустить что-то важное и как соцсети его усиливают?|Синдром упущенной выгоды
+slang|Гостинг|Почему люди исчезают из переписки без объяснений и как это переживается?|Гостинг
+slang|Думскроллинг|Почему мы листаем плохие новости, хотя от них только хуже?|Думскроллинг
+slang|Поколение Z|Кто такие зумеры и миллениалы и чем поколения правда отличаются?|Поколение Z
+slang|Токсичность|Что называют токсичным поведением и почему слово стало таким популярным?|Токсичность (социология)
+slang|Хайп|Откуда слово и как устроен ажиотаж вокруг новинок?|Хайп
+slang|Абьюз|Какие формы насилия в отношениях описывает это слово, кроме физического?|Абьюз
+slang|Вайб|Что описывают этим словом и почему оно прижилось?|Вайб
+slang|Рофл|Как аббревиатура из англоязычного интернета стала русским словом?|ROFL
+slang|NPC как мем|Почему людей стали называть «неигровыми персонажами»?|Неигровой персонаж
+art|Золотое сечение|Правда ли, что оно встречается повсюду в искусстве, или это миф?|Золотое сечение
+art|Импрессионизм|Почему критики сначала высмеивали Моне и его друзей?|Импрессионизм
+art|Чёрный квадрат|Почему картину Малевича считают поворотным моментом в искусстве?|Чёрный квадрат
+art|Эффект Кулешова|Как монтаж меняет смысл одного и того же кадра?|Эффект Кулешова
+art|Мономиф|Почему многие великие истории устроены по одной схеме «пути героя»?|Мономиф
+art|Джаз|Как импровизация стала основой целого музыкального направления?|Джаз
+art|Перспектива в живописи|Как художники Возрождения научились рисовать глубину на плоскости?|Линейная перспектива
+art|Баухаус|Как одна школа дизайна повлияла на вещи, которыми мы пользуемся до сих пор?|Баухаус
+people|Никола Тесла|Что из легенд о нём правда, а что красивый миф?|Никола Тесла
+people|Ада Лавлейс|Как в XIX веке написали первую компьютерную программу?|Ада Лавлейс
+people|Дмитрий Менделеев|Как его таблица предсказала элементы, которые ещё никто не открыл?|Менделеев, Дмитрий Иванович
+people|Алан Тьюринг|Как математик помог выиграть войну и заложил основы компьютеров?|Тьюринг, Алан
+people|Мария Склодовская-Кюри|Как она получила Нобелевские премии в двух разных науках?|Склодовская-Кюри, Мария
+people|Сергей Королёв|Почему имя главного конструктора советской космонавтики держали в секрете?|Королёв, Сергей Павлович
+people|Ричард Фейнман|Чему можно научиться у Фейнмана в подходе к объяснению сложного?|Фейнман, Ричард Филлипс
+people|Юрий Кнорозов|Как советский учёный расшифровал письменность майя, ни разу не побывав в Мексике?|Кнорозов, Юрий Валентинович
+people|Григорий Перельман|Какую задачу он решил и почему отказался от миллиона долларов?|Перельман, Григорий Яковлевич
+people|Виктор Франкл|Что человек, прошедший концлагерь, понял о смысле жизни?|Франкл, Виктор
+people|Николай Вавилов|Зачем он собирал семена со всего мира и что стало с его коллекцией в блокаду?|Вавилов, Николай Иванович
+people|Александр Флеминг|Как случайность в лаборатории подарила миру пенициллин?|Флеминг, Александр
+people|Эмми Нётер|Как связаны симметрии и законы сохранения в физике?|Нётер, Эмми
+people|Леонардо да Винчи|Кем он был больше: художником, инженером или учёным?|Леонардо да Винчи
+earth|Тектоника плит|Почему материки двигаются и как это объясняет землетрясения?|Тектоника плит
+earth|Гольфстрим|Как тёплое течение делает Европу теплее, чем Канаду на той же широте?|Гольфстрим
+earth|Эль-Ниньо|Как потепление воды в Тихом океане меняет погоду на всей планете?|Эль-Ниньо
+earth|Вечная мерзлота|Что происходит, когда оттаивает мерзлота, и почему это важно для климата?|Многолетняя мерзлота
+earth|Инверсия магнитного поля|Почему магнитные полюса Земли иногда меняются местами?|Инверсия магнитного поля Земли
+earth|Байкал|Почему Байкал такой глубокий и почему в нём живут существа, которых нет больше нигде?|Байкал
+earth|Парниковый эффект|Как несколько сотых процента газа в атмосфере меняют температуру всей планеты?|Парниковый эффект
+chem|Реакция Майяра|Почему жареное мясо и хлебная корочка вкуснее варёного?|Реакция Майяра
+chem|Радиоуглеродный анализ|Как определяют возраст древних находок?|Радиоуглеродный анализ
+chem|Катализ|Как вещество ускоряет реакцию и при этом само не расходуется?|Катализ
+chem|Графен|Почему слой углерода толщиной в один атом называют материалом будущего?|Графен
+chem|Хиральность|Почему «зеркальная» копия молекулы может быть лекарством или ядом?|Хиральность (химия)
+chem|pH|Что на самом деле означает кислотность и почему шкала логарифмическая?|Водородный показатель
+soc|Число Данбара|Сколько устойчивых социальных связей может поддерживать один человек?|Число Данбара
+soc|Эффект Матфея|Почему у успешных успех накапливается быстрее, даже в науке?|Эффект Матфея
+soc|Окно Овертона|Как немыслимые идеи постепенно становятся обычными?|Окно Овертона
+soc|Теория разбитых окон|Как мелкий беспорядок влияет на поведение людей вокруг?|Теория разбитых окон
+soc|Теория шести рукопожатий|Правда ли, что все люди связаны цепочкой из нескольких знакомых?|Теория шести рукопожатий
+soc|Хоторнский эффект|Меняется ли поведение людей, когда они знают, что за ними наблюдают?|Хоторнский эффект
+soc|Закон Паркинсона|Почему работа занимает всё время, которое на неё отведено?|Закон Паркинсона
+soc|Принцип Питера|Почему в организациях людей повышают до уровня, где они перестают справляться?|Принцип Питера
+soc|Эхо-камера|Как соцсети окружают нас мнениями, похожими на наши?|Эхо-камера (СМИ)
+`.trim().split('\n').map((l, i) => { const [c, t, q, w] = l.split('|'); return { b: i, cat: c, title: t, q, wiki: w }; });
+
+let kn = store.get('pl.know', { items: [], used: [], lastGen: '', perDay: 3 });
+const saveKn = () => store.set('pl.know', kn);
+const kui = { tab: 'learn', q: '' };
+
+// Алгоритм выдачи: берём ещё не выданные темы, стараемся взять разные сферы
+// и не повторять сферы, которые были в последних 9 темах. Когда банк
+// закончится, темы будут приходить случайными большими статьями Википедии.
+function pickTopics(n){
+  const used = new Set(kn.used), pool = KBANK.filter(t => !used.has(t.b));
+  const recent = kn.items.slice(-9).map(i => i.cat);
+  const out = [];
+  for (let k = 0; k < n && pool.length; k++) {
+    const cats = [...new Set(pool.map(t => t.cat))].filter(c => !out.some(o => o.cat === c));
+    const fresh = cats.filter(c => !recent.includes(c));
+    const cp = (fresh.length ? fresh : cats.length ? cats : [pool[0].cat]);
+    const cat = cp[Math.floor(Math.random() * cp.length)];
+    const opts = pool.filter(t => t.cat === cat);
+    const t = opts[Math.floor(Math.random() * opts.length)];
+    out.push(t); pool.splice(pool.indexOf(t), 1);
+  }
+  return out;
+}
+const KBANK = KBANK_RAW;
+function addTopic(t){
+  kn.items.push({ id: uid(), b: t.b, cat: t.cat, title: t.title, q: t.q, wiki: t.wiki, added: todayKey(), status: 'learn', note: '', doneAt: null });
+  if (t.b != null) kn.used.push(t.b);
+}
+async function wikiRandomTopic(){
+  // случайная, но достаточно большая статья, чтобы было что изучать
+  for (let i = 0; i < 4; i++) {
+    const j = await (await fetch('https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=random&grnnamespace=0&grnlimit=10&prop=info')).json();
+    const pages = Object.values(j.query.pages).filter(p => p.length > 40000 && !/^(Список|Категория)/.test(p.title));
+    if (pages.length) { const p = pages[0]; return { b: null, cat: 'wiki', title: p.title, q: 'Что это и почему об этом стоит знать?', wiki: p.title }; }
+  }
+  throw new Error('no article');
+}
+async function ensureDaily(){
+  const t = todayKey();
+  if (kn.lastGen === t) return false;
+  const picked = pickTopics(kn.perDay);
+  picked.forEach(addTopic);
+  for (let k = picked.length; k < kn.perDay; k++) {
+    try { addTopic(await wikiRandomTopic()); } catch { break; }
+  }
+  kn.lastGen = t; saveKn();
+  return true;
+}
+async function wikiSummary(item){
+  if (item.wx) return item.wx;
+  const u = 'https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exsentences=7&generator=search&gsrlimit=1&gsrsearch=' + encodeURIComponent(item.wiki || item.title);
+  const j = await (await fetch(u)).json();
+  const p = j.query && Object.values(j.query.pages)[0];
+  if (!p) throw new Error('не найдено');
+  item.wx = { title: p.title, text: p.extract, url: p.fullurl }; saveKn();
+  return item.wx;
+}
+
+function renderKnow(tile){
+  app.innerHTML = barHTML(tile.title, `<button class="ibtn" id="kSet" aria-label="Настройки">${ICON.gear}</button>`) + `
+  <main class="hab-page know">
+    <div class="seg" id="kseg"><button data-tab="learn">Изучаю</button><button data-tab="done">Завершённые</button></div>
+    <div id="kv"></div>
+  </main>`;
+  const draw = () => {
+    document.querySelectorAll('#kseg button').forEach(b => b.classList.toggle('on', b.dataset.tab === kui.tab));
+    kui.tab === 'learn' ? drawLearn() : drawDone();
+  };
+  $('#kseg').onclick = e => { const b = e.target.closest('button'); if (b) { kui.tab = b.dataset.tab; draw(); } };
+  $('#kSet').onclick = () => knowSettings(draw);
+  $('#back').onclick = () => location.hash = '';
+  document.onkeydown = e => { if (e.key === 'Escape' && !document.querySelector('.scrim')) location.hash = ''; };
+
+  const card = i => {
+    const [cn, cc] = KCAT[i.cat] || KCAT.own, isNew = i.added === todayKey() && i.status === 'learn';
+    return `<li class="kcard swipe-host" data-id="${i.id}" style="--kc:${cc}">
+      <div class="swipe"></div>
+      <div class="card">
+        <div class="kmeta"><span class="kcat">${cn}</span>${isNew ? '<span class="knew">сегодня</span>' : ''}<span class="kdate">${i.status === 'done' ? 'изучено ' + human(i.doneAt) : human(i.added)}</span></div>
+        <div class="ktitle">${esc(i.title)}</div>
+        <div class="kq">${esc(i.status === 'done' && i.note ? i.note.slice(0, 180) + (i.note.length > 180 ? '…' : '') : i.q)}</div>
+      </div></li>`;
+  };
+  function drawLearn(){
+    const list = kn.items.filter(i => i.status === 'learn').sort((a, b) => b.added.localeCompare(a.added));
+    const left = KBANK.length - kn.used.length;
+    $('#kv').innerHTML = `
+      <div class="kintro">${list.length ? `Тем в работе: <b>${list.length}</b>. Откройте тему, разберитесь и запишите, что узнали.` : 'Все темы разобраны. Новые появятся завтра.'}</div>
+      <ul class="klist" id="kl">${list.map(card).join('')}</ul>
+      <button class="btn add-h" id="kMore">+ Ещё тема сегодня</button>
+      <div class="legend" style="margin-top:10px">${left > 0 ? `В запасе ещё ${left} ${plural(left, 'тема', 'темы', 'тем')}, потом темы будут приходить из Википедии` : 'Темы берутся из Википедии'}</div>`;
+    $('#kMore').onclick = async () => {
+      const [t] = pickTopics(1);
+      try { addTopic(t || await wikiRandomTopic()); saveKn(); drawLearn(); } catch { toast('Нет новой темы: нужен интернет'); }
+    };
+    bindList();
+  }
+  function drawDone(){
+    const q = kui.q.trim().toLowerCase();
+    let list = kn.items.filter(i => i.status === 'done').sort((a, b) => b.doneAt.localeCompare(a.doneAt));
+    const total = list.length;
+    if (q) list = list.filter(i => [i.title, i.q, i.note, (KCAT[i.cat] || KCAT.own)[0]].join(' ').toLowerCase().includes(q));
+    $('#kv').innerHTML = `
+      <div class="search" style="margin:0 0 12px">${ICON.search}<input id="kq" type="search" placeholder="Поиск по заголовкам и записям" enterkeyhint="search" autocomplete="off" value="${esc(kui.q)}"></div>
+      <div class="kintro">${total ? `Изучено тем: <b>${total}</b>${q ? `, найдено: <b>${list.length}</b>` : ''}` : 'Здесь появятся темы, которые вы разобрали'}</div>
+      <ul class="klist" id="kl">${list.map(card).join('')}</ul>`;
+    const inp = $('#kq');
+    inp.oninput = () => { kui.q = inp.value; const pos = inp.selectionStart; drawDone(); const n = $('#kq'); n.focus(); n.setSelectionRange(pos, pos); };
+    bindList();
+  }
+  function bindList(){
+    const kl = $('#kl'); if (!kl) return;
+    kl.onclick = e => {
+      const li = e.target.closest('.kcard'); if (!li || Date.now() - lastSwipe < 400) return;
+      topicSheet(kn.items.find(i => i.id === li.dataset.id), draw);
+    };
+    kl.querySelectorAll('.kcard').forEach(li => attachSwipe(li, {
+      left: { label: 'Удалить', run: reset => {
+        const it = kn.items.find(i => i.id === li.dataset.id);
+        confirmSheet(it.status === 'done' ? 'Удалить запись?' : 'Пропустить тему?', it.status === 'done' ? `«${it.title}» и ваши заметки удалятся.` : `«${it.title}» уберётся из списка и больше не выпадет.`, () => {
+          kn.items = kn.items.filter(i => i.id !== it.id); saveKn(); draw();
+        }, reset, it.status === 'done' ? 'Удалить' : 'Пропустить');
+      } }
+    }));
+  }
+  ensureDaily().then(added => { if (added && location.hash.startsWith('#t/' + tile.id)) draw(); });
+  draw();
+}
+
+function topicSheet(it, done){
+  const [cn, cc] = KCAT[it.cat] || KCAT.own;
+  sheet(`
+    <div class="kmeta" style="--kc:${cc}"><span class="kcat">${cn}</span><span class="kdate">${it.status === 'done' ? 'изучено ' + human(it.doneAt) : 'добавлено ' + human(it.added)}</span></div>
+    <h2 style="margin:6px 0 6px">${esc(it.title)}</h2>
+    <p class="kq big">${esc(it.q)}</p>
+    <div class="kwiki" id="kw"><button class="btn" id="kwLoad" style="width:100%">Справка из Википедии</button></div>
+    <label class="dq" style="margin-top:16px"><span class="dq-label">Что я узнал</span>
+      <textarea id="kNote" rows="4" placeholder="Своими словами: суть, ответ на вопрос, что удивило">${esc(it.note || '')}</textarea></label>
+    <div class="legend" id="kSaved" style="text-align:left;margin-top:6px"></div>
+    <div class="row-actions">
+      ${it.status === 'done' ? '<button class="btn" id="kBack">Вернуть в изучаемые</button>' : '<button class="btn primary" id="kDone">В завершённые</button>'}
+    </div>`, (el, close) => {
+    const ta = $('#kNote', el);
+    const grow = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+    grow();
+    let t;
+    ta.oninput = () => { it.note = ta.value; grow(); clearTimeout(t); t = setTimeout(() => { saveKn(); $('#kSaved', el).textContent = 'Сохранено'; }, 300); };
+    const showWiki = w => {
+      $('#kw', el).innerHTML = `<div class="kw-t">${esc(w.title)}</div><p>${esc(w.text || 'Краткого описания нет').replace(/\n/g, '<br>')}</p><a href="${esc(w.url)}" target="_blank" rel="noopener">Читать статью целиком →</a>`;
+    };
+    const load = async () => {
+      $('#kw', el).innerHTML = '<div class="hint" style="padding:10px 0">Загрузка…</div>';
+      try { showWiki(await wikiSummary(it)); }
+      catch { $('#kw', el).innerHTML = `<div class="legend" style="text-align:left">Не удалось загрузить справку.</div><a href="https://ru.wikipedia.org/w/index.php?search=${encodeURIComponent(it.wiki || it.title)}" target="_blank" rel="noopener">Искать в Википедии →</a>`; }
+    };
+    if (it.wx) showWiki(it.wx); else $('#kwLoad', el).onclick = load;
+    const d = $('#kDone', el);
+    d && (d.onclick = () => {
+      if (!it.note.trim()) { toast('Сначала запишите, что узнали'); return; }
+      it.status = 'done'; it.doneAt = todayKey(); saveKn(); close(); done(); toast('Тема в завершённых');
+    });
+    const bk = $('#kBack', el);
+    bk && (bk.onclick = () => { it.status = 'learn'; it.doneAt = null; saveKn(); close(); done(); });
+  }, () => { saveKn(); done(); });
+}
+
+function knowSettings(done){
+  sheet(`
+    <h2>Знания</h2>
+    <div class="field"><span>Новых тем в день</span>
+      <div class="seg small" id="kPer">${[1, 2, 3].map(n => `<button data-n="${n}" class="${kn.perDay === n ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    <div class="field"><span>Своя тема</span>
+      <input class="inp" id="kOwnT" placeholder="Тема, например «Как работает биржа»" style="margin-bottom:8px">
+      <input class="inp" id="kOwnQ" placeholder="Вопрос, на который хотите ответить (необязательно)">
+    </div>
+    <div class="row-actions"><button class="btn primary" id="kOwnAdd">Добавить тему</button></div>`, (el, close) => {
+    $('#kPer', el).onclick = e => {
+      const b = e.target.closest('[data-n]'); if (!b) return;
+      kn.perDay = +b.dataset.n; saveKn();
+      el.querySelectorAll('#kPer button').forEach(x => x.classList.toggle('on', x === b));
+    };
+    $('#kOwnAdd', el).onclick = () => {
+      const t = $('#kOwnT', el).value.trim(); if (!t) return toast('Введите тему');
+      addTopic({ b: null, cat: 'own', title: t, q: $('#kOwnQ', el).value.trim() || 'Что это и как устроено?', wiki: t });
+      saveKn(); close(); done(); toast('Тема добавлена');
+    };
+  }, done);
+}
+
+/* =========================================================
    Данные плиток: выгрузка, загрузка, сброс
 
    ========================================================= */
-const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], breath: [] };
+const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [] };
 const TILE_DEFAULT = {
   habits: { title: 'Привычки', color: '#6b8afd' },
   breath: { title: 'Дыхание',  color: '#f2a65a' },
   goals:  { title: 'Цели',     color: '#7cc6a4' },
   notes:  { title: 'Заметки',  color: '#e8e4da' },
   diary:  { title: 'Дневник',  color: '#a78bfa' },
-  market: { title: 'Рынки',    color: '#5fb3d9' }
+  market: { title: 'Рынки',    color: '#5fb3d9' },
+  know:   { title: 'Знания',   color: '#f4d35e' }
 };
 async function exportTile(tile){
   const data = {};
