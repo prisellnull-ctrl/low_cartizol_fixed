@@ -219,7 +219,14 @@ img{max-width:100%}
 .day-row .hab-img{width:38px;height:38px;font-size:21px}
 .legend{text-align:center;color:var(--muted);font-size:13px;margin-top:4px}
 .mgr{list-style:none;margin:0 0 14px;padding:0}
-.mgr button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:8px 0;border-bottom:1px solid var(--line)}
+.mgr li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+.mgr li:last-child{border-bottom:0}
+.mgr li.hint{border-bottom:0}
+.mgr button.mgr-row{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;padding:10px 0}
+.mgr .handle{flex:none;width:44px;height:44px;display:grid;place-items:center;color:var(--muted);touch-action:none;cursor:grab}
+.mgr .handle svg{width:20px;height:20px;fill:currentColor}
+.mgr li.drag{position:relative;z-index:5;background:var(--surface);box-shadow:0 10px 26px rgba(0,0,0,.2);border-radius:12px;border-bottom-color:transparent}
+.mgr-hint{color:var(--muted);font-size:13px;margin:-4px 0 12px}
 .wdpick{display:flex;gap:6px;flex-wrap:wrap}
 .wdpick .chip{flex:1;justify-content:center;min-width:40px}
 .dpick{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -230,6 +237,36 @@ img{max-width:100%}
 .stepper b{font-size:22px;min-width:30px;text-align:center;font-variant-numeric:tabular-nums}
 .stepper span{color:var(--muted);font-size:14px}
 .plan-prev{margin-top:10px;font-size:13.5px;color:var(--muted)}
+
+/* карта памяти */
+.map-page{display:flex;flex-direction:column;height:calc(100dvh - 60px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+.map-seg{margin:2px 16px 10px;flex:none}
+.map-body{flex:1;min-height:0;position:relative}
+.map-view{position:absolute;inset:0;overflow:hidden;touch-action:none;background:var(--soft);cursor:grab}
+.map-view:active{cursor:grabbing}
+.map-surface{position:absolute;left:0;top:0;transform-origin:0 0;line-height:0;will-change:transform}
+.map-surface img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
+.pin{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;padding:0;overflow:hidden;background:var(--surface);box-shadow:0 0 0 3px var(--c,#ef6f6c),0 6px 14px rgba(0,0,0,.35);transform:scale(calc(1/var(--z,1)));transform-origin:center;display:grid;place-items:center;color:var(--muted);font-size:11px}
+.pin img{width:100%;height:100%;object-fit:cover}
+.map-hint{position:absolute;left:14px;right:14px;top:14px;z-index:6;background:var(--surface);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:13.5px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.map-hint span{flex:1}
+.map-hint[hidden]{display:none}
+.map-zoom{position:absolute;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;flex-direction:column;gap:8px}
+.map-zoom button{width:44px;height:44px;border-radius:50%;background:var(--surface);box-shadow:0 4px 14px rgba(0,0,0,.18);font-size:22px;font-weight:500;line-height:1}
+.map-fab{position:absolute;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;width:56px;height:56px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.map-fab svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.map-fab.on{background:var(--danger)}
+.map-fab.on svg{transform:rotate(45deg)}
+.map-list{list-style:none;margin:0;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;height:100%}
+.place-row{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:10px;width:100%;text-align:left}
+.place-th{width:56px;height:56px;flex:none;border-radius:13px;overflow:hidden;background:var(--soft)}
+.place-th img{width:100%;height:100%;object-fit:cover}
+.place-main{min-width:0;display:flex;flex-direction:column;gap:3px}
+.place-date{font-size:12.5px;color:var(--muted)}
+.place-note{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.place-view{width:100%;border-radius:18px;display:block;max-height:56vh;object-fit:cover;margin-bottom:14px;background:var(--soft)}
+.place-when{color:var(--muted);font-size:13.5px;margin:0 0 8px}
+.place-text{margin:0 0 18px;white-space:pre-wrap;overflow-wrap:anywhere}
 .goals{list-style:none;margin:0;padding:0 0 90px;display:flex;flex-direction:column;gap:10px}
 .goal{display:flex;gap:14px;align-items:stretch;background:var(--surface);border-radius:22px;padding:12px;cursor:pointer}
 .goal.closed{opacity:.85}
@@ -491,6 +528,7 @@ if (tiles[1] && tiles[1].type === 'blank') {           // миграция: вт
 if (!tiles.some(t => t.type === 'diary')) { tiles.push({ id: uid(), title: 'Дневник', color: '#a78bfa', img: null, type: 'diary' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'know')) { tiles.push({ id: uid(), title: 'Знания', color: '#f4d35e', img: null, type: 'know' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'market')) { tiles.push({ id: uid(), title: 'Рынки', color: '#5fb3d9', img: null, type: 'market' }); saveTiles(); }
+if (!tiles.some(t => t.type === 'map')) { tiles.push({ id: uid(), title: 'Карта', color: '#ef6f6c', img: null, type: 'map' }); saveTiles(); }
 const saveNb = () => store.set('pl.notes', nb);
 
 /* =========================================================
@@ -549,7 +587,8 @@ const ICON = {
   gear:  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   moon:  '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
   sun:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-  dots:  '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>'
+  dots:  '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>',
+  grip:  '<svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'
 };
 
 /* =========================================================
@@ -610,6 +649,7 @@ function route(){
   if (tile.type === 'diary') return renderDiary(tile);
   if (tile.type === 'market') return renderMarket(tile);
   if (tile.type === 'know') return renderKnow(tile);
+  if (tile.type === 'map') return renderMap(tile);
   renderBlank(tile);
 }
 window.addEventListener('hashchange', route);
@@ -1687,14 +1727,58 @@ function askDeleteHabit(h, done, reset){
 
 function habitManager(done){
   const active = () => hb.habits.filter(h => !h.archivedAt);
-  sheet(`<h2>Привычки</h2><ul class="mgr" id="mgr"></ul><button class="btn primary" id="mAdd" style="width:100%">+ Добавить привычку</button>`, (el, close) => {
+  sheet(`<h2>Привычки</h2>${active().length > 1 ? '<div class="mgr-hint">Перетащите за ⠿, чтобы изменить порядок — так они будут идти в списке на «Сегодня»</div>' : ''}<ul class="mgr" id="mgr"></ul><button class="btn primary" id="mAdd" style="width:100%">+ Добавить привычку</button>`, (el, close) => {
     const list = $('#mgr', el);
     list.innerHTML = active().length ? active().map(h => `
-      <li><button data-id="${h.id}"><span class="hab-img">${habIcon(h)}</span><span class="hab-main"><span class="hab-name">${esc(h.name)}</span><span class="hab-sub">${schedText(h)}</span></span></button></li>`).join('')
+      <li class="mgr-item" data-id="${h.id}">
+        <button class="mgr-row" data-id="${h.id}"><span class="hab-img">${habIcon(h)}</span><span class="hab-main"><span class="hab-name">${esc(h.name)}</span><span class="hab-sub">${schedText(h)}</span></span></button>
+        <button class="handle" type="button" aria-label="Порядок привычки «${esc(h.name)}»: перетащите или Alt+стрелки" title="Перетащите, чтобы изменить порядок">${ICON.grip}</button>
+      </li>`).join('')
       : '<li class="hint" style="padding:16px 0">Список пуст</li>';
-    list.onclick = e => { const b = e.target.closest('[data-id]'); if (!b) return; close(); habitEditor(hb.habits.find(h => h.id === b.dataset.id), done); };
+    list.onclick = e => {
+      if (e.target.closest('.handle')) return;
+      const b = e.target.closest('[data-id]'); if (!b) return;
+      close(); habitEditor(hb.habits.find(h => h.id === b.dataset.id), done);
+    };
+    const commitOrder = () => {
+      const order = [...list.querySelectorAll('.mgr-item[data-id]')].map(el => el.dataset.id);
+      const set = new Set(order);
+      hb.habits = order.map(id => hb.habits.find(h => h.id === id)).concat(hb.habits.filter(h => !set.has(h.id)));
+      saveHb();
+    };
+    let drag = null;
+    list.onpointerdown = e => {
+      const h = e.target.closest('.handle'); if (!h || e.button) return;
+      const li = h.closest('.mgr-item[data-id]'); if (!li) return;
+      e.preventDefault();
+      drag = { li }; li.classList.add('drag');
+      try { h.setPointerCapture(e.pointerId); } catch (err) {}
+    };
+    list.onpointermove = e => {
+      if (!drag) return;
+      const under = document.elementFromPoint(e.clientX, e.clientY)?.closest('.mgr-item[data-id]');
+      if (under && under !== drag.li) {
+        const all = [...list.children], a = all.indexOf(drag.li), b = all.indexOf(under);
+        list.insertBefore(drag.li, a < b ? under.nextSibling : under);
+        navigator.vibrate && navigator.vibrate(8);
+      }
+    };
+    const endDrag = () => { if (!drag) return; drag.li.classList.remove('drag'); drag = null; commitOrder(); };
+    list.onpointerup = endDrag;
+    list.onpointercancel = endDrag;
+    list.onkeydown = e => {
+      if (!e.altKey || !/Arrow(Up|Down)/.test(e.key)) return;
+      const li = e.target.closest('.mgr-item[data-id]'); if (!li) return;
+      e.preventDefault();
+      const arr = [...list.querySelectorAll('.mgr-item[data-id]')];
+      const i = arr.indexOf(li), j = i + (e.key === 'ArrowUp' ? -1 : 1);
+      if (j < 0 || j >= arr.length) return;
+      list.insertBefore(li, e.key === 'ArrowUp' ? arr[j] : arr[j].nextSibling);
+      commitOrder();
+      $('.handle', li).focus();
+    };
     $('#mAdd', el).onclick = () => { close(); habitEditor(null, done); };
-  });
+  }, done);
 }
 
 function habitEditor(h, done){
@@ -2932,10 +3016,267 @@ function knowSettings(done){
 }
 
 /* =========================================================
+   Карта памяти: места на карте с фото и подписью
+   ========================================================= */
+let mp = store.get('pl.map', { img: null, places: [] });
+const saveMp = () => store.set('pl.map', mp);
+const mpui = { tab: 'map', zoom: null, tx: 0, ty: 0, placing: false };
+const MZ_MIN = .2, MZ_MAX = 4;
+const mclamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function renderMap(tile){
+  mpui.placing = false;
+  app.innerHTML = barHTML(tile.title, `<button class="ibtn" id="mapSet" aria-label="Настройка карты">${ICON.gear}</button>`) + `
+  <main class="map-page">
+    <div class="seg map-seg" id="mSeg">
+      <button data-tab="map">Карта</button>
+      <button data-tab="list">Места</button>
+    </div>
+    <div class="map-body" id="mBody"></div>
+  </main>`;
+  $('#back').onclick = () => location.hash = '';
+  $('#mapSet').onclick = () => mapSettings(draw);
+  $('#mSeg').onclick = e => { const b = e.target.closest('button'); if (b) { mpui.tab = b.dataset.tab; draw(); } };
+  document.onkeydown = e => {
+    if (e.key !== 'Escape') return;
+    if (document.querySelector('.scrim')) return;
+    if (mpui.placing) { mpui.placing = false; draw(); return; }
+    location.hash = '';
+  };
+
+  function draw(){
+    document.querySelectorAll('#mSeg button').forEach(b => b.classList.toggle('on', b.dataset.tab === mpui.tab));
+    const body = $('#mBody');
+    if (mpui.tab === 'list') return drawList(body);       // список мест не зависит от того, загружена ли картинка карты
+    if (!mp.img) return drawEmpty(body);
+    drawMapView(body);
+  }
+
+  function drawEmpty(body){
+    body.innerHTML = `<div class="empty"><div><b>Карта ещё не загружена</b>Загрузите изображение карты — например, скриншот карты города — и сможете отмечать на нём места<div style="margin-top:18px"><label class="btn primary filebtn" style="padding:0 22px;display:inline-grid;place-items:center">Загрузить карту<input type="file" accept="image/*" id="mFirst"></label></div></div></div>`;
+    $('#mFirst', body).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { mp.img = await readImage(f, 1400); mpui.zoom = null; mpui.tx = 0; mpui.ty = 0; saveMp(); draw(); }
+      catch { toast('Не получилось открыть картинку'); }
+    };
+  }
+
+  function drawList(body){
+    if (!mp.places.length) { body.innerHTML = '<div class="empty"><div><b>Мест пока нет</b>Отметьте первое на карте — и оно появится здесь</div></div>'; return; }
+    const items = [...mp.places].sort((a, b) => b.created - a.created);
+    body.innerHTML = `<ul class="map-list" id="mList">${items.map(p => {
+      const dt = new Date(p.created);
+      return `<li><button type="button" class="place-row" data-id="${p.id}">
+        <span class="place-th">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</span>
+        <span class="place-main">
+          <span class="place-date">${dt.getDate()} ${MONTHS_G[dt.getMonth()]}</span>
+          ${p.note ? `<span class="place-note">${esc(p.note)}</span>` : ''}
+        </span>
+      </button></li>`;
+    }).join('')}</ul>`;
+    $('#mList', body).onclick = e => {
+      const b = e.target.closest('[data-id]'); if (!b) return;
+      openPlaceViewer(mp.places.find(x => x.id === b.dataset.id), draw);
+    };
+  }
+
+  function drawMapView(body){
+    body.innerHTML = `
+      <div class="map-view" id="mView">
+        <div class="map-surface" id="mSurface">
+          <img id="mImg" src="${mp.img}" alt="" draggable="false">
+          ${mp.places.map(p => `<button type="button" class="pin" data-id="${p.id}" style="left:${(p.x * 100).toFixed(3)}%;top:${(p.y * 100).toFixed(3)}%" aria-label="Место: ${esc(p.note || 'без подписи')}">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</button>`).join('')}
+        </div>
+        <div class="map-hint" id="mHint" hidden><span>Нажмите на карту, чтобы отметить место</span><button type="button" class="btn small" id="mCancelPlace">Отмена</button></div>
+        <div class="map-zoom"><button type="button" id="zIn" aria-label="Приблизить">+</button><button type="button" id="zOut" aria-label="Отдалить">−</button></div>
+        <button type="button" class="map-fab" id="mFab" aria-label="Отметить место">${ICON.plus}</button>
+      </div>`;
+    const view = $('#mView', body), surface = $('#mSurface', body), img = $('#mImg', body);
+
+    function applyView(){
+      surface.style.transform = `translate(${mpui.tx}px,${mpui.ty}px) scale(${mpui.zoom})`;
+      surface.style.setProperty('--z', mpui.zoom);
+    }
+    function fitToView(){
+      const vw = view.clientWidth, vh = view.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight;
+      if (!iw || !ih || !vw || !vh) return;
+      mpui.zoom = Math.min(vw / iw, vh / ih, 1) || 1;
+      mpui.tx = (vw - iw * mpui.zoom) / 2; mpui.ty = (vh - ih * mpui.zoom) / 2;
+      applyView();
+    }
+    if (mpui.zoom == null) { if (img.complete && img.naturalWidth) fitToView(); else img.onload = fitToView; }
+    else applyView();
+
+    function zoomAround(cx, cy, factor){
+      const anchorX = (cx - mpui.tx) / mpui.zoom, anchorY = (cy - mpui.ty) / mpui.zoom;
+      mpui.zoom = mclamp(mpui.zoom * factor, MZ_MIN, MZ_MAX);
+      mpui.tx = cx - anchorX * mpui.zoom; mpui.ty = cy - anchorY * mpui.zoom;
+      applyView();
+    }
+    $('#zIn', body).onclick = () => zoomAround(view.clientWidth / 2, view.clientHeight / 2, 1.35);
+    $('#zOut', body).onclick = () => zoomAround(view.clientWidth / 2, view.clientHeight / 2, 1 / 1.35);
+
+    function setPlacing(on){
+      mpui.placing = on;
+      $('#mFab', body).classList.toggle('on', on);
+      $('#mFab', body).setAttribute('aria-label', on ? 'Отменить отметку места' : 'Отметить место');
+      $('#mHint', body).hidden = !on;
+    }
+    $('#mFab', body).onclick = () => setPlacing(!mpui.placing);
+    $('#mCancelPlace', body).onclick = () => setPlacing(false);
+
+    function handleTap(cx, cy){
+      const hit = document.elementFromPoint(cx, cy)?.closest('.pin[data-id]');
+      if (hit) return openPlaceViewer(mp.places.find(x => x.id === hit.dataset.id), draw);
+      if (!mpui.placing) return;
+      const r = surface.getBoundingClientRect();
+      const x = mclamp((cx - r.left) / r.width, 0, 1), y = mclamp((cy - r.top) / r.height, 0, 1);
+      setPlacing(false);
+      openPlaceEditor(null, x, y, draw);
+    }
+
+    const pointers = new Map();
+    let pan = null, pinch = null, tap = null;
+    view.onpointerdown = e => {
+      if (e.button) return;
+      view.setPointerCapture(e.pointerId);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1) {
+        tap = { x: e.clientX, y: e.clientY, moved: false, id: e.pointerId };
+        pan = { x0: e.clientX, y0: e.clientY, tx0: mpui.tx, ty0: mpui.ty };
+        pinch = null;
+      } else if (pointers.size === 2) {
+        tap = null; pan = null;
+        const [a, b] = [...pointers.values()], vr = view.getBoundingClientRect();
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        pinch = { dist0: Math.hypot(a.x - b.x, a.y - b.y), zoom0: mpui.zoom, vr,
+                  anchorX: (mx - vr.left - mpui.tx) / mpui.zoom, anchorY: (my - vr.top - mpui.ty) / mpui.zoom };
+      }
+    };
+    view.onpointermove = e => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 1 && pan) {
+        const dx = e.clientX - pan.x0, dy = e.clientY - pan.y0;
+        if (tap && Math.hypot(dx, dy) > 6) tap.moved = true;
+        mpui.tx = pan.tx0 + dx; mpui.ty = pan.ty0 + dy;
+        applyView();
+      } else if (pointers.size >= 2 && pinch) {
+        const [a, b] = [...pointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        mpui.zoom = mclamp(pinch.zoom0 * (dist / pinch.dist0), MZ_MIN, MZ_MAX);
+        mpui.tx = (mx - pinch.vr.left) - pinch.anchorX * mpui.zoom;
+        mpui.ty = (my - pinch.vr.top) - pinch.anchorY * mpui.zoom;
+        applyView();
+      }
+    };
+    const endPointer = e => {
+      const clean = pointers.size === 1 && tap && !tap.moved && tap.id === e.pointerId;
+      const tapXY = clean ? { x: tap.x, y: tap.y } : null;
+      pointers.delete(e.pointerId);
+      if (pointers.size === 0) {
+        tap = null; pan = null; pinch = null;
+        if (tapXY) handleTap(tapXY.x, tapXY.y);
+      } else if (pointers.size === 1) {
+        const p = [...pointers.values()][0];
+        pan = { x0: p.x, y0: p.y, tx0: mpui.tx, ty0: mpui.ty }; pinch = null; tap = null;
+      }
+    };
+    view.onpointerup = endPointer;
+    view.onpointercancel = endPointer;
+    view.onwheel = e => {
+      e.preventDefault();
+      const vr = view.getBoundingClientRect();
+      zoomAround(e.clientX - vr.left, e.clientY - vr.top, Math.exp(-e.deltaY * 0.0015));
+    };
+  }
+
+  draw();
+}
+
+function mapSettings(done){
+  sheet(`
+    <h2>Карта</h2>
+    <div class="field"><span>Изображение карты</span>
+      <div class="imgrow">
+        <img class="prev" id="mPrev" alt="" ${mp.img ? `src="${mp.img}"` : ''}>
+        <label class="btn filebtn" style="flex:none;padding:0 16px;display:grid;place-items:center">${mp.img ? 'Заменить' : 'Загрузить'}<input type="file" accept="image/*" id="mFile"></label>
+        ${mp.img ? '<button class="btn" style="flex:none;padding:0 16px" id="mNoImg">Убрать</button>' : ''}
+      </div>
+      <p class="hint" style="color:var(--muted);font-size:13px;margin:8px 0 0">Например, скриншот карты города из вашего картографического приложения.</p>
+    </div>`, (el, close) => {
+    $('#mFile', el).onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      const apply = async () => {
+        try { mp.img = await readImage(f, 1400); saveMp(); close(); done(); }
+        catch { toast('Не получилось открыть картинку'); }
+      };
+      if (mp.img && mp.places.length) {
+        confirmSheet('Заменить карту?', `Отмеченных мест: ${mp.places.length}. Их положение привязано к текущему изображению — после замены точки могут оказаться не на тех местах. Сами места и фото не удалятся.`, apply, null, 'Заменить');
+      } else apply();
+    };
+    const noImg = $('#mNoImg', el);
+    noImg && (noImg.onclick = () => {
+      close();
+      confirmSheet('Убрать карту?', mp.places.length ? `Изображение удалится. Отмеченные места (${mp.places.length}) останутся и будут видны в списке, пока вы не загрузите новую карту.` : 'Изображение карты удалится.', () => { mp.img = null; saveMp(); done(); }, null, 'Убрать');
+    });
+  });
+}
+
+function openPlaceEditor(place, x, y, done){
+  const isNew = !place;
+  const d = place ? { ...place } : { id: uid(), x, y, photo: null, note: '', created: Date.now() };
+  sheet(`
+    <h2>${isNew ? 'Новое место' : 'Место'}</h2>
+    <div class="field"><span>Фото</span>
+      <div class="imgrow">
+        <img class="prev" id="pPrev" alt="" ${d.photo ? `src="${d.photo}"` : ''}>
+        <label class="btn filebtn" style="flex:none;padding:0 16px;display:grid;place-items:center" id="pFileLbl">${d.photo ? 'Заменить' : 'Выбрать'}<input type="file" accept="image/*" id="pFile"></label>
+      </div>
+      <p class="err" id="pErr" style="color:var(--danger);font-size:13px;margin:6px 0 0"></p>
+    </div>
+    <label class="field"><span>Что вы там видели, о чём думали</span><textarea id="pNote" rows="4" placeholder="Необязательно" enterkeyhint="enter">${esc(d.note)}</textarea></label>
+    <div class="row-actions">
+      ${isNew ? '' : '<button class="btn danger" id="pDel">Удалить</button>'}
+      <button class="btn primary" id="pSave">Сохранить</button>
+    </div>`, (el, close) => {
+    $('#pFile', el).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { d.photo = await readImage(f, 900); $('#pPrev', el).src = d.photo; $('#pFileLbl', el).firstChild.textContent = 'Заменить'; $('#pErr', el).textContent = ''; }
+      catch { toast('Не получилось открыть картинку'); }
+    };
+    $('#pSave', el).onclick = () => {
+      d.note = $('#pNote', el).value.trim();
+      if (!d.photo) return $('#pErr', el).textContent = 'Добавьте фото';
+      if (isNew) mp.places.push(d); else mp.places[mp.places.findIndex(x => x.id === d.id)] = d;
+      saveMp(); close(); done();
+    };
+    const del = $('#pDel', el);
+    del && (del.onclick = () => { close(); confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => { mp.places = mp.places.filter(x => x.id !== d.id); saveMp(); done(); }); });
+  });
+}
+
+function openPlaceViewer(p, done){
+  if (!p) return;
+  const dt = new Date(p.created);
+  sheet(`
+    ${p.photo ? `<img class="place-view" src="${p.photo}" alt="">` : ''}
+    <p class="place-when">${dt.getDate()} ${MONTHS_G[dt.getMonth()]} ${dt.getFullYear()}</p>
+    ${p.note ? `<p class="place-text">${esc(p.note)}</p>` : ''}
+    <div class="row-actions">
+      <button class="btn" id="vEdit">Изменить</button>
+      <button class="btn danger" id="vDel">Удалить</button>
+    </div>`, (el, close) => {
+    $('#vEdit', el).onclick = () => { close(); openPlaceEditor(p, null, null, done); };
+    $('#vDel', el).onclick = () => { close(); confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => { mp.places = mp.places.filter(x => x.id !== p.id); saveMp(); done(); }); };
+  });
+}
+
+/* =========================================================
    Данные плиток: выгрузка, загрузка, сброс
 
    ========================================================= */
-const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [] };
+const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [], map: ['pl.map'] };
 const TILE_DEFAULT = {
   habits: { title: 'Привычки', color: '#6b8afd' },
   breath: { title: 'Дыхание',  color: '#f2a65a' },
@@ -2943,7 +3284,8 @@ const TILE_DEFAULT = {
   notes:  { title: 'Заметки',  color: '#e8e4da' },
   diary:  { title: 'Дневник',  color: '#a78bfa' },
   market: { title: 'Рынки',    color: '#5fb3d9' },
-  know:   { title: 'Знания',   color: '#f4d35e' }
+  know:   { title: 'Знания',   color: '#f4d35e' },
+  map:    { title: 'Карта',    color: '#ef6f6c' }
 };
 async function exportTile(tile){
   const data = {};

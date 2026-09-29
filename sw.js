@@ -1,4 +1,4 @@
-const CACHE = 'plitki-v13';
+const CACHE = 'plitki-v15';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', e => {
