@@ -242,47 +242,7 @@ img{max-width:100%}
 .stepper span{color:var(--muted);font-size:14px}
 .plan-prev{margin-top:10px;font-size:13.5px;color:var(--muted)}
 
-/* карта памяти */
-.map-page{display:flex;flex-direction:column;height:calc(100dvh - 60px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
-.map-seg{margin:2px 16px 10px;flex:none}
-.map-body{flex:1;min-height:0;position:relative}
-.map-view{position:absolute;inset:0;background:var(--soft)}
-.map-loading{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:24px}
-#mLeaf{position:absolute;inset:0}
-.leaflet-container{width:100%;height:100%;background:var(--soft);font:14px/1.4 var(--ui)}
-.leaflet-container.placing{cursor:crosshair}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-control-zoom a,:root:not([data-theme="light"]) .leaflet-control-attribution{background:var(--surface);color:var(--fg)}}
-:root[data-theme="dark"] .leaflet-control-zoom a,:root[data-theme="dark"] .leaflet-control-attribution{background:var(--surface);color:var(--fg)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-control-zoom a:hover{background:var(--soft)}}
-:root[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--soft)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-control-attribution a{color:var(--accent)}}
-:root[data-theme="dark"] .leaflet-control-attribution a{color:var(--accent)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .leaflet-bar a{border-color:var(--line)}}
-:root[data-theme="dark"] .leaflet-bar a{border-color:var(--line)}
-.pin-wrap{background:none;border:0}
-.pin{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;overflow:hidden;background:var(--surface);box-shadow:0 0 0 3px var(--c,#ef6f6c),0 6px 14px rgba(0,0,0,.35);color:var(--muted);font-size:11px}
-.pin img{width:100%;height:100%;object-fit:cover}
-.map-hint{position:absolute;left:14px;right:14px;top:14px;z-index:1001;background:var(--surface);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:13.5px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-.map-hint span{flex:1}
-.map-hint[hidden]{display:none}
-.map-fab{position:absolute;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:1001;width:56px;height:56px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.3)}
-.map-fab svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
-.map-fab.on{background:var(--danger)}
-.map-fab.on svg{transform:rotate(45deg)}
-.map-locate{position:absolute;right:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:1001;width:44px;height:44px;border-radius:50%;background:var(--surface);box-shadow:0 4px 14px rgba(0,0,0,.18);display:grid;place-items:center;color:var(--fg)}
-.map-locate svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
-.map-locate.busy svg{animation:mloc 1s linear infinite}
-@keyframes mloc{to{transform:rotate(360deg)}}
-.map-list{list-style:none;margin:0;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;height:100%}
-.place-row > .card{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:10px;cursor:pointer}
-.place-th{width:56px;height:56px;flex:none;border-radius:13px;overflow:hidden;background:var(--soft)}
-.place-th img{width:100%;height:100%;object-fit:cover}
-.place-main{min-width:0;display:flex;flex-direction:column;gap:3px}
-.place-date{font-size:12.5px;color:var(--muted)}
-.place-note{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.place-view{width:100%;border-radius:18px;display:block;max-height:56vh;object-fit:cover;margin-bottom:14px;background:var(--soft)}
 .place-when{color:var(--muted);font-size:13.5px;margin:0 0 8px}
-.place-text{margin:0 0 18px;white-space:pre-wrap;overflow-wrap:anywhere}
 .ta{width:100%;min-height:132px;resize:vertical;border:0;border-radius:12px;background:var(--soft);padding:10px 12px;font:16px/1.5 var(--text);outline:none}
 .ta:focus{box-shadow:inset 0 0 0 1.5px var(--accent)}
 .ta::placeholder{color:var(--muted);font-family:var(--ui);font-size:14.5px}
@@ -561,7 +521,7 @@ if (tiles[1] && tiles[1].type === 'blank') {           // миграция: вт
 if (!tiles.some(t => t.type === 'diary')) { tiles.push({ id: uid(), title: 'Дневник', color: '#a78bfa', img: null, type: 'diary' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'know')) { tiles.push({ id: uid(), title: 'Знания', color: '#f4d35e', img: null, type: 'know' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'market')) { tiles.push({ id: uid(), title: 'Рынки', color: '#5fb3d9', img: null, type: 'market' }); saveTiles(); }
-if (!tiles.some(t => t.type === 'map')) { tiles.push({ id: uid(), title: 'Карта', color: '#ef6f6c', img: null, type: 'map' }); saveTiles(); }
+if (tiles.some(t => t.type === 'map')) { tiles = tiles.filter(t => t.type !== 'map'); saveTiles(); }
 if (!tiles.some(t => t.type === 'read')) { tiles.push({ id: uid(), title: 'Прочтения', color: '#2d323b', img: null, type: 'read' }); saveTiles(); }
 const saveNb = () => store.set('pl.notes', nb);
 
@@ -684,7 +644,6 @@ function route(){
   if (tile.type === 'diary') return renderDiary(tile);
   if (tile.type === 'market') return renderMarket(tile);
   if (tile.type === 'know') return renderKnow(tile);
-  if (tile.type === 'map') return renderMap(tile);
   if (tile.type === 'read') return renderReadings(tile);
   renderBlank(tile);
 }
@@ -3052,263 +3011,6 @@ function knowSettings(done){
 }
 
 /* =========================================================
-   Карта памяти: места на карте с фото и подписью
-   ========================================================= */
-let mp = store.get('pl.map', { places: [] });
-mp.places = (Array.isArray(mp.places) ? mp.places : [])
-  .filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number' && isFinite(p.lat) && isFinite(p.lng));
-const saveMp = () => store.set('pl.map', mp);
-const mpui = { tab: 'map', placing: false, center: null, zoom: null };
-const PERM = [58.0105, 56.2502];
-
-function geoPos(opts){
-  return new Promise(resolve => {
-    if (!navigator.geolocation) return resolve(null);
-    let done = false;
-    const finish = v => { if (done) return; done = true; resolve(v); };
-    navigator.geolocation.getCurrentPosition(
-      pos => finish([pos.coords.latitude, pos.coords.longitude]),
-      () => finish(null),
-      opts
-    );
-  });
-}
-async function initialView(){
-  if (mpui.center) return { center: mpui.center, zoom: mpui.zoom || 12 };
-  const here = await geoPos({ timeout: 6000, maximumAge: 300000 });
-  return here ? { center: here, zoom: 15 } : { center: PERM, zoom: 12 };
-}
-
-let leafletReady = null;
-function ensureLeaflet(){
-  if (window.L) return Promise.resolve();
-  if (leafletReady) return leafletReady;
-  leafletReady = new Promise((resolve, reject) => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';
-    document.head.appendChild(link);
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';
-    script.onload = () => resolve();
-    script.onerror = () => { leafletReady = null; reject(new Error('load failed')); };
-    document.head.appendChild(script);
-  });
-  return leafletReady;
-}
-
-function renderMap(tile){
-  mpui.placing = false;
-  app.innerHTML = barHTML(tile.title) + `
-  <main class="map-page">
-    <div class="seg map-seg" id="mSeg">
-      <button data-tab="map">Карта</button>
-      <button data-tab="list">Места</button>
-    </div>
-    <div class="map-body" id="mBody"></div>
-  </main>`;
-  $('#back').onclick = () => location.hash = '';
-  $('#mSeg').onclick = e => { const b = e.target.closest('button'); if (b) { mpui.tab = b.dataset.tab; draw(); } };
-  document.onkeydown = e => {
-    if (e.key !== 'Escape') return;
-    if (document.querySelector('.scrim')) return;
-    if (mpui.placing) { mpui.placing = false; draw(); return; }
-    location.hash = '';
-  };
-
-  let leafMap = null, markersLayer = null;
-  const destroyMap = () => { if (leafMap) { leafMap.remove(); leafMap = null; markersLayer = null; } };
-  const pinIcon = p => L.divIcon({
-    className: 'pin-wrap',
-    html: `<span class="pin">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</span>`,
-    iconSize: [44, 44], iconAnchor: [22, 22]
-  });
-  function renderMarkers(){
-    if (!markersLayer) return;
-    markersLayer.clearLayers();
-    mp.places.forEach(p => {
-      L.marker([p.lat, p.lng], { icon: pinIcon(p) }).addTo(markersLayer).on('click', () => openPlaceViewer(p, afterEdit));
-    });
-  }
-  // после сохранения/удаления места: если сейчас открыта живая карта — просто обновляем метки на ней
-  // (без разрушения и пересоздания L.map, чтобы не сбрасывать положение и не перезагружать тайлы),
-  // иначе — обычное полное обновление страницы
-  function afterEdit(){
-    if (mpui.tab === 'map' && leafMap) renderMarkers();
-    else draw();
-  }
-
-  function draw(){
-    document.querySelectorAll('#mSeg button').forEach(b => b.classList.toggle('on', b.dataset.tab === mpui.tab));
-    destroyMap();
-    const body = $('#mBody');
-    if (mpui.tab === 'list') return drawList(body);
-    drawMapView(body);
-  }
-
-  function drawList(body){
-    if (!mp.places.length) { body.innerHTML = '<div class="empty"><div><b>Мест пока нет</b>Отметьте первое на карте — и оно появится здесь</div></div>'; return; }
-    const items = [...mp.places].sort((a, b) => b.created - a.created);
-    body.innerHTML = `<ul class="map-list" id="mList">${items.map(p => {
-      const dt = new Date(p.created);
-      return `<li class="place-row swipe-host" data-id="${p.id}">
-        <div class="swipe"></div>
-        <div class="card">
-          <span class="place-th">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</span>
-          <span class="place-main">
-            <span class="place-date">${dt.getDate()} ${MONTHS_G[dt.getMonth()]}</span>
-            ${p.note ? `<span class="place-note">${esc(p.note)}</span>` : ''}
-          </span>
-        </div>
-      </li>`;
-    }).join('')}</ul>`;
-    const mlist = $('#mList', body);
-    mlist.onclick = e => {
-      const li = e.target.closest('.place-row'); if (!li || Date.now() - lastSwipe < 400) return;
-      openPlaceViewer(mp.places.find(x => x.id === li.dataset.id), afterEdit);
-    };
-    mlist.querySelectorAll('.place-row').forEach(li => attachSwipe(li, {
-      left: { label: 'Удалить', run: reset => {
-        const p = mp.places.find(x => x.id === li.dataset.id); if (!p) return reset();
-        confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => {
-          mp.places = mp.places.filter(x => x.id !== p.id); saveMp(); afterEdit();
-        }, reset);
-      } }
-    }));
-  }
-
-  async function drawMapView(body){
-    body.innerHTML = '<div class="map-view" id="mView"><div class="map-loading">Загрузка карты…</div></div>';
-    const view = $('#mView', body);
-    let iv;
-    try { [, iv] = await Promise.all([ensureLeaflet(), initialView()]); }
-    catch {
-      view.innerHTML = '<div class="empty"><div><b>Не удалось загрузить карту</b>Нужно подключение к интернету, чтобы первый раз загрузить карту<div style="margin-top:18px"><button class="btn primary" id="mRetry" style="padding:0 22px">Повторить</button></div></div></div>';
-      $('#mRetry', view).onclick = () => drawMapView(body);
-      return;
-    }
-    if (mpui.tab !== 'map') return;   // пользователь успел переключить вкладку, пока грузилась библиотека
-
-    view.innerHTML = `
-      <div id="mLeaf"></div>
-      <div class="map-hint" id="mHint" hidden><span>Нажмите на карту, чтобы отметить место</span><button type="button" class="btn small" id="mCancelPlace">Отмена</button></div>
-      <button type="button" class="map-locate" id="mLocate" aria-label="Показать моё местоположение">${ICON.locate}</button>
-      <button type="button" class="map-fab" id="mFab" aria-label="Отметить место">${ICON.plus}</button>`;
-
-    const map = L.map($('#mLeaf', view), { attributionControl: false })
-      .setView(iv.center, iv.zoom);
-    leafMap = map;
-    L.control.attribution({ position: 'bottomleft' }).addTo(map);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
-    }).addTo(map);
-    requestAnimationFrame(() => map.invalidateSize());
-    map.on('moveend', () => { const c = map.getCenter(); mpui.center = [c.lat, c.lng]; mpui.zoom = map.getZoom(); });
-
-    markersLayer = L.layerGroup().addTo(map);
-    renderMarkers();
-
-    function setPlacing(on){
-      mpui.placing = on;
-      $('#mFab', view).classList.toggle('on', on);
-      $('#mFab', view).setAttribute('aria-label', on ? 'Отменить отметку места' : 'Отметить место');
-      $('#mHint', view).hidden = !on;
-      map.getContainer().classList.toggle('placing', on);
-    }
-    $('#mLocate', view).onclick = async () => {
-      const btn = $('#mLocate', view);
-      if (!navigator.geolocation) { toast('Геолокация недоступна в этом браузере'); return; }
-      btn.classList.add('busy');
-      const here = await geoPos({ enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
-      btn.classList.remove('busy');
-      if (!here) { toast('Не удалось определить местоположение'); return; }
-      map.setView(here, 15);
-    };
-    $('#mFab', view).onclick = () => setPlacing(!mpui.placing);
-    $('#mCancelPlace', view).onclick = () => setPlacing(false);
-
-    // Тап для простановки метки отслеживаем сами, а не через 'click' у Leaflet:
-    // на сенсорном экране из-за дрожания пальца Leaflet иногда классифицирует
-    // чистый тап как начало перетаскивания и событие click вовсе не присылает.
-    const container = map.getContainer();
-    const active = new Set();
-    let tapStart = null;
-    container.addEventListener('pointerdown', e => {
-      active.add(e.pointerId);
-      tapStart = active.size === 1 ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
-    });
-    container.addEventListener('pointerup', e => {
-      active.delete(e.pointerId);
-      if (!tapStart || tapStart.id !== e.pointerId) return;
-      const moved = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y);
-      tapStart = null;
-      if (moved > 10 || !mpui.placing) return;
-      const rect = container.getBoundingClientRect();
-      const latlng = map.containerPointToLatLng(L.point(e.clientX - rect.left, e.clientY - rect.top));
-      setPlacing(false);
-      openPlaceEditor(null, latlng.lat, latlng.lng, afterEdit);
-    });
-    container.addEventListener('pointercancel', e => {
-      active.delete(e.pointerId);
-      if (tapStart && tapStart.id === e.pointerId) tapStart = null;
-    });
-  }
-
-  draw();
-  pageCleanup = () => { destroyMap(); document.onkeydown = null; };
-}
-
-function openPlaceEditor(place, lat, lng, done){
-  const isNew = !place;
-  const d = place ? { ...place } : { id: uid(), lat, lng, photo: null, note: '', created: Date.now() };
-  sheet(`
-    <h2>${isNew ? 'Новое место' : 'Место'}</h2>
-    <div class="field"><span>Фото</span>
-      <div class="imgrow">
-        <img class="prev" id="pPrev" alt="" ${d.photo ? `src="${d.photo}"` : ''}>
-        <label class="btn filebtn" style="flex:none;padding:0 16px;display:grid;place-items:center" id="pFileLbl">${d.photo ? 'Заменить' : 'Выбрать'}<input type="file" accept="image/*" id="pFile"></label>
-      </div>
-      <p class="err" id="pErr" style="color:var(--danger);font-size:13px;margin:6px 0 0"></p>
-    </div>
-    <label class="field"><span>Что вы там видели, о чём думали</span><textarea class="ta" id="pNote" rows="6" placeholder="Необязательно" enterkeyhint="enter">${esc(d.note)}</textarea></label>
-    <div class="row-actions">
-      ${isNew ? '' : '<button class="btn danger" id="pDel">Удалить</button>'}
-      <button class="btn primary" id="pSave">Сохранить</button>
-    </div>`, (el, close) => {
-    $('#pFile', el).onchange = async e => {
-      const f = e.target.files[0]; if (!f) return;
-      try { d.photo = await readImage(f, 900); $('#pPrev', el).src = d.photo; $('#pFileLbl', el).firstChild.textContent = 'Заменить'; $('#pErr', el).textContent = ''; }
-      catch { toast('Не получилось открыть картинку'); }
-    };
-    $('#pSave', el).onclick = () => {
-      d.note = $('#pNote', el).value.trim();
-      if (!d.photo) return $('#pErr', el).textContent = 'Добавьте фото';
-      if (isNew) mp.places.push(d); else mp.places[mp.places.findIndex(x => x.id === d.id)] = d;
-      saveMp(); close(); done();
-    };
-    const del = $('#pDel', el);
-    del && (del.onclick = () => { close(); confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => { mp.places = mp.places.filter(x => x.id !== d.id); saveMp(); done(); }); });
-  });
-}
-
-function openPlaceViewer(p, done){
-  if (!p) return;
-  const dt = new Date(p.created);
-  sheet(`
-    ${p.photo ? `<img class="place-view" src="${p.photo}" alt="">` : ''}
-    <p class="place-when">${dt.getDate()} ${MONTHS_G[dt.getMonth()]} ${dt.getFullYear()}</p>
-    ${p.note ? `<p class="place-text">${esc(p.note)}</p>` : ''}
-    <div class="row-actions">
-      <button class="btn" id="vEdit">Изменить</button>
-      <button class="btn danger" id="vDel">Удалить</button>
-    </div>`, (el, close) => {
-    $('#vEdit', el).onclick = () => { close(); openPlaceEditor(p, null, null, done); };
-    $('#vDel', el).onclick = () => { close(); confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => { mp.places = mp.places.filter(x => x.id !== p.id); saveMp(); done(); }); };
-  });
-}
-
-/* =========================================================
    Прочтения: книги и дневник чтения по датам
    ========================================================= */
 let rd = store.get('pl.read', { books: [] });
@@ -3485,7 +3187,7 @@ function entryEditor(book, entry, refresh){
    Данные плиток: выгрузка, загрузка, сброс
 
    ========================================================= */
-const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [], map: ['pl.map'], read: ['pl.read'] };
+const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [], read: ['pl.read'] };
 const TILE_DEFAULT = {
   habits: { title: 'Привычки', color: '#6b8afd' },
   breath: { title: 'Дыхание',  color: '#f2a65a' },
@@ -3494,7 +3196,6 @@ const TILE_DEFAULT = {
   diary:  { title: 'Дневник',  color: '#a78bfa' },
   market: { title: 'Рынки',    color: '#5fb3d9' },
   know:   { title: 'Знания',   color: '#f4d35e' },
-  map:    { title: 'Карта',    color: '#ef6f6c' },
   read:   { title: 'Прочтения', color: '#2d323b' }
 };
 async function exportTile(tile){
