@@ -30,6 +30,10 @@
   :root:not([data-theme="light"]){--bg:#16191e;--surface:#1f232a;--fg:#e6e8ec;--muted:#8a919c;--line:#2c313a;--soft:#262b33;--accent:#8c9aff;--danger:#ef6f68}
 }
 :root[data-theme="dark"]{--bg:#16191e;--surface:#1f232a;--fg:#e6e8ec;--muted:#8a919c;--line:#2c313a;--soft:#262b33;--accent:#8c9aff;--danger:#ef6f68}
+:root{color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+:root[data-theme="dark"]{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
 *,*::before,*::after{box-sizing:inherit}
 html{height:100%;touch-action:manipulation;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font:16px/1.45 var(--ui);-webkit-tap-highlight-color:transparent}
@@ -78,7 +82,7 @@ img{max-width:100%}
 .tile.add{border:2px dashed var(--line);background:transparent;color:var(--muted);align-items:center;justify-content:center;font-weight:500}
 
 /* ---------- шторка (sheet) ---------- */
-.scrim{position:fixed;inset:0;z-index:40;background:rgba(10,12,16,.45);display:flex;align-items:flex-end;justify-content:center}
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(10,12,16,.45);display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--kb);transition:padding-bottom .15s ease}
 .sheet:focus{outline:none}
 .sheet{width:min(100%,560px);max-height:88vh;max-height:88dvh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));animation:up .18s ease-out}
 @keyframes up{from{transform:translateY(24px);opacity:.6}}
@@ -270,7 +274,7 @@ img{max-width:100%}
 .map-locate.busy svg{animation:mloc 1s linear infinite}
 @keyframes mloc{to{transform:rotate(360deg)}}
 .map-list{list-style:none;margin:0;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;height:100%}
-.place-row{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:10px;width:100%;text-align:left}
+.place-row > .card{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:10px;cursor:pointer}
 .place-th{width:56px;height:56px;flex:none;border-radius:13px;overflow:hidden;background:var(--soft)}
 .place-th img{width:100%;height:100%;object-fit:cover}
 .place-main{min-width:0;display:flex;flex-direction:column;gap:3px}
@@ -282,6 +286,20 @@ img{max-width:100%}
 .ta{width:100%;min-height:132px;resize:vertical;border:0;border-radius:12px;background:var(--soft);padding:10px 12px;font:16px/1.5 var(--text);outline:none}
 .ta:focus{box-shadow:inset 0 0 0 1.5px var(--accent)}
 .ta::placeholder{color:var(--muted);font-family:var(--ui);font-size:14.5px}
+/* прочтения */
+.book-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.book-row > .card{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:10px;cursor:pointer}
+.book-th{width:56px;height:72px;flex:none;border-radius:10px;overflow:hidden;background:var(--soft);display:grid;place-items:center;color:var(--muted);font-size:26px}
+.book-th img{width:100%;height:100%;object-fit:cover}
+.book-main{min-width:0;display:flex;flex-direction:column;gap:3px}
+.book-title{font-weight:600;overflow-wrap:anywhere}
+.book-meta{font-size:12.5px;color:var(--muted)}
+.book-cover{width:100%;max-height:50vh;object-fit:cover;border-radius:18px;display:block;margin-bottom:14px;background:var(--soft)}
+.rentry{border-top:1px solid var(--line);padding:12px 2px;cursor:pointer}
+.rentry:first-child{border-top:0}
+.rentry-date{font-size:12.5px;color:var(--muted);margin-bottom:3px}
+.rentry-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.rentry.clickable{cursor:pointer}
 .goals{list-style:none;margin:0;padding:0 0 90px;display:flex;flex-direction:column;gap:10px}
 .goal{display:flex;gap:14px;align-items:stretch;background:var(--surface);border-radius:22px;padding:12px;cursor:pointer}
 .goal.closed{opacity:.85}
@@ -544,6 +562,7 @@ if (!tiles.some(t => t.type === 'diary')) { tiles.push({ id: uid(), title: 'Дн
 if (!tiles.some(t => t.type === 'know')) { tiles.push({ id: uid(), title: 'Знания', color: '#f4d35e', img: null, type: 'know' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'market')) { tiles.push({ id: uid(), title: 'Рынки', color: '#5fb3d9', img: null, type: 'market' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'map')) { tiles.push({ id: uid(), title: 'Карта', color: '#ef6f6c', img: null, type: 'map' }); saveTiles(); }
+if (!tiles.some(t => t.type === 'read')) { tiles.push({ id: uid(), title: 'Прочтения', color: '#2d323b', img: null, type: 'read' }); saveTiles(); }
 const saveNb = () => store.set('pl.notes', nb);
 
 /* =========================================================
@@ -666,6 +685,7 @@ function route(){
   if (tile.type === 'market') return renderMarket(tile);
   if (tile.type === 'know') return renderKnow(tile);
   if (tile.type === 'map') return renderMap(tile);
+  if (tile.type === 'read') return renderReadings(tile);
   renderBlank(tile);
 }
 window.addEventListener('hashchange', route);
@@ -3131,18 +3151,30 @@ function renderMap(tile){
     const items = [...mp.places].sort((a, b) => b.created - a.created);
     body.innerHTML = `<ul class="map-list" id="mList">${items.map(p => {
       const dt = new Date(p.created);
-      return `<li><button type="button" class="place-row" data-id="${p.id}">
-        <span class="place-th">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</span>
-        <span class="place-main">
-          <span class="place-date">${dt.getDate()} ${MONTHS_G[dt.getMonth()]}</span>
-          ${p.note ? `<span class="place-note">${esc(p.note)}</span>` : ''}
-        </span>
-      </button></li>`;
+      return `<li class="place-row swipe-host" data-id="${p.id}">
+        <div class="swipe"></div>
+        <div class="card">
+          <span class="place-th">${p.photo ? `<img src="${p.photo}" alt="">` : ''}</span>
+          <span class="place-main">
+            <span class="place-date">${dt.getDate()} ${MONTHS_G[dt.getMonth()]}</span>
+            ${p.note ? `<span class="place-note">${esc(p.note)}</span>` : ''}
+          </span>
+        </div>
+      </li>`;
     }).join('')}</ul>`;
-    $('#mList', body).onclick = e => {
-      const b = e.target.closest('[data-id]'); if (!b) return;
-      openPlaceViewer(mp.places.find(x => x.id === b.dataset.id), afterEdit);
+    const mlist = $('#mList', body);
+    mlist.onclick = e => {
+      const li = e.target.closest('.place-row'); if (!li || Date.now() - lastSwipe < 400) return;
+      openPlaceViewer(mp.places.find(x => x.id === li.dataset.id), afterEdit);
     };
+    mlist.querySelectorAll('.place-row').forEach(li => attachSwipe(li, {
+      left: { label: 'Удалить', run: reset => {
+        const p = mp.places.find(x => x.id === li.dataset.id); if (!p) return reset();
+        confirmSheet('Удалить место?', 'Фото и запись удалятся без возможности восстановления.', () => {
+          mp.places = mp.places.filter(x => x.id !== p.id); saveMp(); afterEdit();
+        }, reset);
+      } }
+    }));
   }
 
   async function drawMapView(body){
@@ -3256,10 +3288,183 @@ function openPlaceViewer(p, done){
 }
 
 /* =========================================================
+   Прочтения: книги и дневник чтения по датам
+   ========================================================= */
+let rd = store.get('pl.read', { books: [] });
+rd.books = (Array.isArray(rd.books) ? rd.books : []).map(b => ({
+  id: String(b.id || uid()), title: String(b.title || ''), img: b.img || null,
+  entries: (Array.isArray(b.entries) ? b.entries : []).map(e => ({
+    id: String(e.id || uid()),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(e.date) ? e.date : todayKey(),
+    text: String(e.text || ''), created: +e.created || Date.now()
+  })),
+  created: +b.created || Date.now(),
+  finishedAt: /^\d{4}-\d{2}-\d{2}$/.test(b.finishedAt) ? b.finishedAt : null
+})).filter(b => b.title);
+const saveRd = () => store.set('pl.read', rd);
+const rdui = { tab: 'reading' };
+
+function renderReadings(tile){
+  app.innerHTML = barHTML(tile.title) + `
+  <main class="hab-page read">
+    <div class="seg" id="rSeg"><button data-tab="reading">Читаю</button><button data-tab="done">Прочитано</button></div>
+    <div id="rList"></div>
+  </main>`;
+  $('#back').onclick = () => location.hash = '';
+  document.onkeydown = e => { if (e.key === 'Escape' && !document.querySelector('.scrim')) location.hash = ''; };
+  $('#rSeg').onclick = e => { const b = e.target.closest('button'); if (b) { rdui.tab = b.dataset.tab; draw(); } };
+
+  function bookCard(b){
+    const n = b.entries.length;
+    const last = n ? [...b.entries].sort((a, c) => c.date.localeCompare(a.date))[0] : null;
+    return `<li class="book-row swipe-host" data-id="${b.id}">
+      <div class="swipe"></div>
+      <div class="card">
+        <span class="book-th">${b.img ? `<img src="${b.img}" alt="">` : '📖'}</span>
+        <span class="book-main">
+          <span class="book-title">${esc(b.title)}</span>
+          <span class="book-meta">${n ? `${n} ${plural(n, 'запись', 'записи', 'записей')}, посл. ${human(last.date)}` : 'Записей пока нет'}</span>
+        </span>
+      </div>
+    </li>`;
+  }
+
+  function draw(){
+    document.querySelectorAll('#rSeg button').forEach(b => b.classList.toggle('on', b.dataset.tab === rdui.tab));
+    const list = rdui.tab === 'done'
+      ? rd.books.filter(b => b.finishedAt).sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))
+      : rd.books.filter(b => !b.finishedAt).sort((a, b) => b.created - a.created);
+    const el = $('#rList');
+    el.innerHTML = (list.length
+      ? `<ul class="book-list">${list.map(bookCard).join('')}</ul>`
+      : `<div class="empty"><div><b>${rdui.tab === 'done' ? 'Прочитанных книг пока нет' : 'Сейчас ничего не читаете'}</b>${rdui.tab === 'done' ? 'Отметьте книгу прочитанной — и она появится здесь' : 'Добавьте книгу, которую сейчас читаете'}</div></div>`)
+      + (rdui.tab === 'reading' ? '<button class="btn add-h" id="rAddBook">+ Книга</button>' : '');
+    const ul = el.querySelector('.book-list');
+    if (ul) {
+      ul.onclick = e => {
+        const li = e.target.closest('.book-row'); if (!li || Date.now() - lastSwipe < 400) return;
+        openBook(rd.books.find(b => b.id === li.dataset.id), draw);
+      };
+      ul.querySelectorAll('.book-row').forEach(li => attachSwipe(li, {
+        left: { label: 'Удалить', run: reset => {
+          const b = rd.books.find(x => x.id === li.dataset.id); if (!b) return reset();
+          confirmSheet('Удалить книгу?', 'Книга и все записи о прочитанном удалятся без возможности восстановления.', () => {
+            rd.books = rd.books.filter(x => x.id !== b.id); saveRd(); draw();
+          }, reset);
+        } }
+      }));
+    }
+    const add = $('#rAddBook'); add && (add.onclick = () => bookEditor(null, draw));
+  }
+  draw();
+}
+
+function bookEditor(book, done){
+  const isNew = !book;
+  const d = book ? { ...book } : { id: uid(), title: '', img: null, entries: [], created: Date.now(), finishedAt: null };
+  sheet(`
+    <h2>${isNew ? 'Новая книга' : 'Изменить книгу'}</h2>
+    <label class="field"><span>Название</span><input class="inp" id="bTitle" value="${esc(d.title)}" placeholder="Автор — Название" enterkeyhint="done"></label>
+    <div class="field"><span>Обложка</span>
+      <div class="imgrow">
+        <img class="prev" id="bPrev" alt="" ${d.img ? `src="${d.img}"` : ''}>
+        <label class="btn filebtn" style="flex:none;padding:0 16px;display:grid;place-items:center" id="bFileLbl">${d.img ? 'Заменить' : 'Выбрать'}<input type="file" accept="image/*" id="bFile"></label>
+        <button class="btn" style="flex:none;padding:0 16px" id="bNoImg">Убрать</button>
+      </div>
+    </div>
+    <p class="err" id="bErr" style="color:var(--danger);font-size:13px;margin:-10px 0 14px"></p>
+    <div class="row-actions">
+      <button class="btn primary" id="bSave">Сохранить</button>
+    </div>`, (el, close) => {
+    $('#bFile', el).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { d.img = await readImage(f, 500); $('#bPrev', el).src = d.img; $('#bFileLbl', el).firstChild.textContent = 'Заменить'; }
+      catch { toast('Не получилось открыть картинку'); }
+    };
+    $('#bNoImg', el).onclick = () => { d.img = null; $('#bPrev', el).removeAttribute('src'); $('#bFileLbl', el).firstChild.textContent = 'Выбрать'; };
+    $('#bTitle', el).onkeydown = e => { if (e.key === 'Enter') $('#bSave', el).click(); };
+    $('#bSave', el).onclick = () => {
+      d.title = $('#bTitle', el).value.trim();
+      if (!d.title) return $('#bErr', el).textContent = 'Введите название книги';
+      if (isNew) rd.books.push(d); else rd.books[rd.books.findIndex(x => x.id === d.id)] = d;
+      saveRd(); close(); done();
+    };
+  });
+}
+
+function openBook(book, done){
+  if (!book) return;
+  const finished = !!book.finishedAt;
+  sheet(`
+    ${book.img ? `<img class="book-cover" src="${book.img}" alt="">` : ''}
+    <h2 style="margin-bottom:4px">${esc(book.title)}</h2>
+    <p class="place-when" style="margin-bottom:14px">${finished ? 'Прочитано ' + human(book.finishedAt) : 'Сейчас читаю'}</p>
+    <div class="row-actions">
+      ${finished ? '' : '<button class="btn primary" id="rAddEntry">+ Запись</button>'}
+      ${finished ? '<button class="btn" id="rUnfinish">Вернуть в процесс</button>' : '<button class="btn" id="rFinish">Отметить прочитанной</button>'}
+      ${finished ? '' : '<button class="btn" id="rEditBook">Изменить</button>'}
+      <button class="btn danger" id="rDelBook">Удалить</button>
+    </div>
+    <div id="rEntries" style="margin-top:6px"></div>`, (el, close) => {
+    function renderEntries(){
+      const items = [...book.entries].sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created);
+      $('#rEntries', el).innerHTML = items.length
+        ? items.map(e => `<div class="rentry${finished ? '' : ' clickable'}" data-id="${e.id}"><div class="rentry-date">${human(e.date)}</div><div class="rentry-text">${esc(e.text)}</div></div>`).join('')
+        : `<p style="color:var(--muted);padding:12px 2px">${finished ? 'Записей не было' : 'Записей пока нет — добавьте первую кнопкой выше'}</p>`;
+      if (finished) { $('#rEntries', el).onclick = null; return; }
+      $('#rEntries', el).onclick = e2 => {
+        const row = e2.target.closest('.rentry'); if (!row) return;
+        entryEditor(book, book.entries.find(x => x.id === row.dataset.id), renderEntries);
+      };
+    }
+    renderEntries();
+    const add = $('#rAddEntry', el); add && (add.onclick = () => entryEditor(book, null, renderEntries));
+    const fin = $('#rFinish', el); fin && (fin.onclick = () => { book.finishedAt = todayKey(); saveRd(); close(); toast('Книга отмечена прочитанной'); });
+    const unf = $('#rUnfinish', el); unf && (unf.onclick = () => { book.finishedAt = null; saveRd(); close(); });
+    const edit = $('#rEditBook', el); edit && (edit.onclick = () => { close(); bookEditor(book, done); });
+    $('#rDelBook', el).onclick = () => {
+      close();
+      confirmSheet('Удалить книгу?', 'Книга и все записи о прочитанном удалятся без возможности восстановления.', () => {
+        rd.books = rd.books.filter(x => x.id !== book.id); saveRd(); done();
+      });
+    };
+  }, done);
+}
+
+function entryEditor(book, entry, refresh){
+  const isNew = !entry;
+  const d = entry ? { ...entry } : { id: uid(), date: todayKey(), text: '', created: Date.now() };
+  sheet(`
+    <h2>${isNew ? 'Новая запись' : 'Запись'}</h2>
+    <div class="field"><span>Дата</span><input class="inp" type="date" id="eDate" value="${d.date}"></div>
+    <label class="field"><span>Краткий пересказ — что прочитали за эту дату</span><textarea class="ta" id="eText" rows="6" placeholder="Своими словами, о чём эта часть">${esc(d.text)}</textarea></label>
+    <p class="err" id="eErr" style="color:var(--danger);font-size:13px;margin:-10px 0 14px"></p>
+    <div class="row-actions">
+      ${isNew ? '' : '<button class="btn danger" id="eDel">Удалить</button>'}
+      <button class="btn primary" id="eSave">Сохранить</button>
+    </div>`, (el, close) => {
+    $('#eSave', el).onclick = () => {
+      d.date = $('#eDate', el).value || todayKey();
+      d.text = $('#eText', el).value.trim();
+      if (!d.text) return $('#eErr', el).textContent = 'Добавьте текст';
+      if (isNew) book.entries.push(d); else book.entries[book.entries.findIndex(x => x.id === d.id)] = d;
+      saveRd(); close(); refresh();
+    };
+    const del = $('#eDel', el);
+    del && (del.onclick = () => {
+      close();
+      confirmSheet('Удалить запись?', 'Запись удалится без возможности восстановления.', () => {
+        book.entries = book.entries.filter(x => x.id !== d.id); saveRd(); refresh();
+      });
+    });
+  });
+}
+
+/* =========================================================
    Данные плиток: выгрузка, загрузка, сброс
 
    ========================================================= */
-const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [], map: ['pl.map'] };
+const TILE_KEYS = { notes: ['pl.notes', 'pl.lp'], habits: ['pl.habits'], goals: ['pl.goals'], diary: ['pl.diary'], market: ['pl.market', 'pl.mcache'], know: ['pl.know'], breath: [], map: ['pl.map'], read: ['pl.read'] };
 const TILE_DEFAULT = {
   habits: { title: 'Привычки', color: '#6b8afd' },
   breath: { title: 'Дыхание',  color: '#f2a65a' },
@@ -3268,7 +3473,8 @@ const TILE_DEFAULT = {
   diary:  { title: 'Дневник',  color: '#a78bfa' },
   market: { title: 'Рынки',    color: '#5fb3d9' },
   know:   { title: 'Знания',   color: '#f4d35e' },
-  map:    { title: 'Карта',    color: '#ef6f6c' }
+  map:    { title: 'Карта',    color: '#ef6f6c' },
+  read:   { title: 'Прочтения', color: '#2d323b' }
 };
 async function exportTile(tile){
   const data = {};
