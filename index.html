@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#f3ead7" id="metaTheme">
+<meta name="theme-color" content="#eef0f3" id="metaTheme">
 <script>try{var t=localStorage.getItem("pl.theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,14 +13,13 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f3ead7; --surface:#fff8ea; --fg:#141414; --muted:#5e564c; --line:#141414; --soft:#efe4cc;
-  --accent:#d7263d; --danger:#c4322c;
-  --ui:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --display:"Unbounded","Manrope",sans-serif;
-  --text:"Manrope",system-ui,sans-serif;
+  --bg:#eef0f3; --surface:#ffffff; --fg:#1c2027; --muted:#737a86; --line:#d9dde3; --soft:#e3e6eb;
+  --accent:#4a5bd4; --danger:#c8423b;
+  --ui:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --text:"Literata",Georgia,"Times New Roman",serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --kb:0px;
   box-sizing:border-box;
@@ -28,9 +27,9 @@
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#1a1612;--surface:#241f1a;--fg:#f6efe2;--muted:#b5a898;--line:#f6efe2;--soft:#2c261f;--accent:#ff5a6a;--danger:#ff6d66}
+  :root:not([data-theme="light"]){--bg:#16191e;--surface:#1f232a;--fg:#e6e8ec;--muted:#8a919c;--line:#2c313a;--soft:#262b33;--accent:#8c9aff;--danger:#ef6f68}
 }
-:root[data-theme="dark"]{--bg:#1a1612;--surface:#241f1a;--fg:#f6efe2;--muted:#b5a898;--line:#f6efe2;--soft:#2c261f;--accent:#ff5a6a;--danger:#ff6d66}
+:root[data-theme="dark"]{--bg:#16191e;--surface:#1f232a;--fg:#e6e8ec;--muted:#8a919c;--line:#2c313a;--soft:#262b33;--accent:#8c9aff;--danger:#ef6f68}
 :root{color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
 :root[data-theme="dark"]{color-scheme:dark}
@@ -466,45 +465,6 @@ img{max-width:100%}
 .taglist .n{color:var(--muted);font-size:13px;margin-left:8px}
 .addrow{display:flex;gap:8px}
 .addrow .btn{flex:none;padding:0 18px;height:46px}
-
-/* ---------- comic skin ---------- */
-.home-head h1{font-family:var(--display);font-size:40px;font-weight:800;letter-spacing:-.03em;color:#fff;-webkit-text-stroke:3px #141414;paint-order:stroke fill;text-shadow:5px 5px 0 #d7263d;line-height:.95}
-.home-head .date{color:#141414;font-weight:700;font-size:15px}
-:root[data-theme="dark"] .home-head .date{color:#f6efe2}
-.gear{background:var(--bg);color:#141414;border:3px solid #141414;box-shadow:none}
-:root[data-theme="dark"] .gear{color:#f6efe2;border-color:#f6efe2;background:#1a1612}
-.gear.on{background:#141414;color:#fff8ea}
-.grid{width:min(100% - 28px,430px);gap:12px}
-.tile{border:4px solid #141414;border-radius:20px;padding:0;aspect-ratio:1.42/1;box-shadow:none;color:#fff}
-.tile:active{transform:translate(2px,2px) scale(1)}
-.tile .pic{position:absolute;inset:0;width:100%;height:100%;border-radius:16px;object-fit:cover;box-shadow:none;align-self:stretch}
-.tile .glyph{position:absolute;right:12px;top:12px;width:46%;opacity:.16;border-radius:12px}
-.tile .name{position:absolute;left:10px;bottom:8px;z-index:2;max-width:calc(100% - 20px);font-family:var(--display);font-weight:800;font-size:15px;line-height:1.05;color:#fff;-webkit-text-stroke:4px #141414;paint-order:stroke fill;letter-spacing:-.03em}
-.tile.add{border-style:dashed;background:transparent;color:var(--muted)}
-.bar{background:var(--bg);border-bottom:3px solid #141414}
-.scrolled .bar{box-shadow:none}
-.bar h1{font-family:var(--display);font-weight:800;font-size:20px;color:#fff;-webkit-text-stroke:2px #141414;paint-order:stroke fill;text-shadow:3px 3px 0 #d7263d}
-.ibtn{border:3px solid #141414;border-radius:50%;background:var(--bg);color:#141414}
-:root[data-theme="dark"] .ibtn{border-color:#f6efe2;color:#f6efe2}
-.ibtn:active{background:var(--soft)}
-.pill,.chip,.seg button,.btn,.inp,.search input,.sheet,.tools{border:3px solid #141414}
-.pill,.chip{border-radius:999px;background:var(--surface)}
-.chip.on,.pill.on,.seg button.on{background:#141414;color:#fff8ea;border-color:#141414}
-.btn{border-radius:14px;background:var(--surface);box-shadow:3px 3px 0 #141414}
-.btn:active{transform:translate(2px,2px);box-shadow:none}
-.btn.primary{background:#141414;color:#fff8ea}
-.btn.danger{color:var(--danger);background:var(--surface)}
-.inp,.search input{border-radius:14px;background:var(--surface)}
-.sheet{background:var(--surface);border-radius:22px 22px 0 0;border-bottom:0}
-.sheet h2{font-family:var(--display);font-weight:800}
-.note .card,.book-row .card,.hab,.goal,.kcard,.day-row,.panel,.lp{border:3px solid #141414;border-radius:16px}
-.note .card{filter:none;box-shadow:3px 3px 0 #141414}
-.seg{border:3px solid #141414;border-radius:16px;overflow:hidden;background:var(--surface)}
-.seg button{border:0;border-right:3px solid #141414;border-radius:0}
-.seg button:last-child{border-right:0}
-.tools{background:var(--surface);border-top:3px solid #141414}
-.toast{background:#141414;color:#fff8ea;border-radius:14px;border:3px solid #141414}
-
 </style>
 </head>
 <body>
@@ -562,14 +522,7 @@ if (!tiles.some(t => t.type === 'diary')) { tiles.push({ id: uid(), title: 'Дн
 if (!tiles.some(t => t.type === 'know')) { tiles.push({ id: uid(), title: 'Знания', color: '#f4d35e', img: null, type: 'know' }); saveTiles(); }
 if (!tiles.some(t => t.type === 'market')) { tiles.push({ id: uid(), title: 'Рынки', color: '#5fb3d9', img: null, type: 'market' }); saveTiles(); }
 if (tiles.some(t => t.type === 'map')) { tiles = tiles.filter(t => t.type !== 'map'); saveTiles(); }
-if (!tiles.some(t => t.type === 'read')) { tiles.push({ id: uid(), title: 'Прочтения', color: '#e24b3a', img: null, type: 'read' }); saveTiles(); }
-const COMIC_ART = { habits:'art/habits.jpg', breath:'art/breath.jpg', goals:'art/goals.jpg', notes:'art/notes.jpg', diary:'art/diary.jpg', market:'art/market.jpg', know:'art/know.jpg', read:'art/read.jpg' };
-if (!store.get('pl.comicArt', false)) {
-  tiles.forEach(t => { if (!t.img && COMIC_ART[t.type]) t.img = COMIC_ART[t.type]; });
-  saveTiles();
-  store.set('pl.comicArt', true);
-}
-
+if (!tiles.some(t => t.type === 'read')) { tiles.push({ id: uid(), title: 'Прочтения', color: '#2d323b', img: null, type: 'read' }); saveTiles(); }
 const saveNb = () => store.set('pl.notes', nb);
 
 /* =========================================================
@@ -702,7 +655,7 @@ window.addEventListener('scroll', () => document.body.classList.toggle('scrolled
    Тема: светлая / ночная
    ========================================================= */
 const isDark = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
-function syncThemeMeta(){ $('#metaTheme').content = isDark() ? '#1a1612' : '#f3ead7'; }
+function syncThemeMeta(){ $('#metaTheme').content = isDark() ? '#16191e' : '#eef0f3'; }
 function toggleTheme(){
   const next = isDark() ? 'light' : 'dark';
   document.documentElement.dataset.theme = next;

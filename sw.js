@@ -1,6 +1,5 @@
-const CACHE = 'plitki-comic-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png',
-  './art/habits.jpg','./art/breath.jpg','./art/goals.jpg','./art/notes.jpg','./art/diary.jpg','./art/market.jpg','./art/know.jpg','./art/read.jpg'];
+const CACHE = 'plitki-v22';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
@@ -12,6 +11,7 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 
+// cache-first; шрифты Google кэшируются при первом запуске, дальше всё работает офлайн
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
