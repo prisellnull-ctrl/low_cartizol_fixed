@@ -3227,10 +3227,31 @@ function renderMap(tile){
     };
     $('#mFab', view).onclick = () => setPlacing(!mpui.placing);
     $('#mCancelPlace', view).onclick = () => setPlacing(false);
-    map.on('click', e => {
-      if (!mpui.placing) return;
+
+    // Тап для простановки метки отслеживаем сами, а не через 'click' у Leaflet:
+    // на сенсорном экране из-за дрожания пальца Leaflet иногда классифицирует
+    // чистый тап как начало перетаскивания и событие click вовсе не присылает.
+    const container = map.getContainer();
+    const active = new Set();
+    let tapStart = null;
+    container.addEventListener('pointerdown', e => {
+      active.add(e.pointerId);
+      tapStart = active.size === 1 ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
+    });
+    container.addEventListener('pointerup', e => {
+      active.delete(e.pointerId);
+      if (!tapStart || tapStart.id !== e.pointerId) return;
+      const moved = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y);
+      tapStart = null;
+      if (moved > 10 || !mpui.placing) return;
+      const rect = container.getBoundingClientRect();
+      const latlng = map.containerPointToLatLng(L.point(e.clientX - rect.left, e.clientY - rect.top));
       setPlacing(false);
-      openPlaceEditor(null, e.latlng.lat, e.latlng.lng, afterEdit);
+      openPlaceEditor(null, latlng.lat, latlng.lng, afterEdit);
+    });
+    container.addEventListener('pointercancel', e => {
+      active.delete(e.pointerId);
+      if (tapStart && tapStart.id === e.pointerId) tapStart = null;
     });
   }
 
