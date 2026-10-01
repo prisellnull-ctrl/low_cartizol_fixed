@@ -64,11 +64,11 @@ img{max-width:100%}
 .edit-hint{margin-top:14px;color:var(--muted);font-size:13.5px;text-align:center}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:min(100% - 40px,350px)}
 @media (min-width:640px){.grid{width:min(100%,400px)}}
-.tile{position:relative;aspect-ratio:1/1.08;border-radius:24px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;overflow:hidden;transition:transform .12s}
+.tile{position:relative;aspect-ratio:1/1.08;border-radius:14px;display:flex;flex-direction:column;justify-content:flex-end;text-align:left;overflow:hidden;transition:transform .12s;box-shadow:0 6px 16px rgba(0,0,0,.2)}
 .tile:active{transform:scale(.97)}
-.tile .pic{width:68%;aspect-ratio:1;border-radius:18px;object-fit:cover;align-self:flex-end;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-.tile .glyph{width:68%;aspect-ratio:1;border-radius:18px;align-self:flex-end;background:currentColor;opacity:.14}
-.tile .name{font-size:17px;font-weight:600;line-height:1.15;letter-spacing:-.01em;word-break:break-word}
+.tile .pic{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}
+.tile .glyph{position:absolute;inset:0;background:currentColor;opacity:.14}
+.tile .name{position:relative;z-index:1;padding:0 14px 12px;font-size:19px;font-weight:700;line-height:1.15;letter-spacing:-.01em;word-break:break-word;color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill}
 .editing .tile{animation:wob .9s ease-in-out infinite alternate}
 .editing .tile:nth-child(2n){animation-delay:-.45s}
 @keyframes wob{from{transform:rotate(-.8deg)}to{transform:rotate(.8deg)}}
@@ -370,8 +370,7 @@ img{max-width:100%}
 #mRef.spin svg{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .grid.many{gap:12px}
-.grid.many .tile{aspect-ratio:1/.74;padding:12px 14px}
-.grid.many .tile .pic,.grid.many .tile .glyph{width:auto;height:58%;aspect-ratio:1}
+.grid.many .tile{aspect-ratio:1/.74}
 .know .kintro{font-size:14px;color:var(--muted);margin:0 2px 12px}
 .know .kintro b{color:var(--fg)}
 .klist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
